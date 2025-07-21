@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package event.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/qkitzero/event-service/gen/go/event/v1";
+
+service EventService {
+  rpc CreateEvent(CreateEventRequest) returns (CreateEventResponse) {
+    option (google.api.http) = {
+      post: "/v1/event"
+      body: "*"
+    };
+  }
+}
+
+message CreateEventRequest {
+  string title = 1;
+  string description = 2;
+}
+
+message CreateEventResponse {
+  string event_id = 1;
+}
