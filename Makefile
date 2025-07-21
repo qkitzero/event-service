@@ -15,6 +15,8 @@ mock-gen:
 	$(MOCK_GEN) -source=internal/domain/event/event.go -destination=mocks/domain/event/mock_event.go -package=mocks
 	$(MOCK_GEN) -source=internal/domain/event/repository.go -destination=mocks/domain/event/mock_repository.go -package=mocks
 	$(MOCK_GEN) -source=internal/application/event/usecase.go -destination=mocks/application/event/mock_usecase.go -package=mocks
+	$(MOCK_GEN) -source=internal/application/user/usecase.go -destination=mocks/application/user/mock_usecase.go -package=mocks
+	$(MOCK_GEN) -destination=mocks/external/user/v1/mock_client.go -package=mocks github.com/qkitzero/user-service/gen/go/user/v1 UserServiceClient
 
 MIGRATE=migrate -source file://internal/infrastructure/db/migrations -database "postgres://$(DB_USER):$(DB_PASSWORD)@localhost:$(DB_HOST_PORT)/$(DB_NAME)?sslmode=$(DB_SSL_MODE)"
 
