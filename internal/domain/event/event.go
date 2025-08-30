@@ -11,6 +11,8 @@ type Event interface {
 	UserID() user.UserID
 	Title() Title
 	Description() Description
+	StartTime() time.Time
+	EndTime() time.Time
 	CreatedAt() time.Time
 }
 
@@ -19,6 +21,8 @@ type event struct {
 	userID      user.UserID
 	title       Title
 	description Description
+	startTime   time.Time
+	endTime     time.Time
 	createdAt   time.Time
 }
 
@@ -38,6 +42,14 @@ func (e event) Description() Description {
 	return e.description
 }
 
+func (e event) StartTime() time.Time {
+	return e.startTime
+}
+
+func (e event) EndTime() time.Time {
+	return e.endTime
+}
+
 func (e event) CreatedAt() time.Time {
 	return e.createdAt
 }
@@ -47,6 +59,8 @@ func NewEvent(
 	userID user.UserID,
 	title Title,
 	description Description,
+	startTime time.Time,
+	endTime time.Time,
 	createdAt time.Time,
 ) Event {
 	return &event{
@@ -54,6 +68,8 @@ func NewEvent(
 		userID:      userID,
 		title:       title,
 		description: description,
+		startTime:   startTime,
+		endTime:     endTime,
 		createdAt:   createdAt,
 	}
 }
