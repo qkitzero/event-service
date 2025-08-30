@@ -70,6 +70,20 @@ func (mr *MockEventMockRecorder) Description() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Description", reflect.TypeOf((*MockEvent)(nil).Description))
 }
 
+// EndTime mocks base method.
+func (m *MockEvent) EndTime() time.Time {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "EndTime")
+	ret0, _ := ret[0].(time.Time)
+	return ret0
+}
+
+// EndTime indicates an expected call of EndTime.
+func (mr *MockEventMockRecorder) EndTime() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EndTime", reflect.TypeOf((*MockEvent)(nil).EndTime))
+}
+
 // ID mocks base method.
 func (m *MockEvent) ID() event.EventID {
 	m.ctrl.T.Helper()
@@ -82,6 +96,20 @@ func (m *MockEvent) ID() event.EventID {
 func (mr *MockEventMockRecorder) ID() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ID", reflect.TypeOf((*MockEvent)(nil).ID))
+}
+
+// StartTime mocks base method.
+func (m *MockEvent) StartTime() time.Time {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "StartTime")
+	ret0, _ := ret[0].(time.Time)
+	return ret0
+}
+
+// StartTime indicates an expected call of StartTime.
+func (mr *MockEventMockRecorder) StartTime() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StartTime", reflect.TypeOf((*MockEvent)(nil).StartTime))
 }
 
 // Title mocks base method.

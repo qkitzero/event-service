@@ -10,6 +10,8 @@ type EventModel struct {
 	ID          event.EventID
 	Title       event.Title
 	Description event.Description
+	StartTime   time.Time
+	EndTime     time.Time
 	CreatedAt   time.Time
 }
 

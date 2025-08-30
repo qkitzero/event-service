@@ -30,7 +30,7 @@ func (h *EventHandler) CreateEvent(ctx context.Context, req *eventv1.CreateEvent
 		return nil, err
 	}
 
-	event, err := h.eventUsecase.CreateEvent(userID, req.GetTitle(), req.GetDescription())
+	event, err := h.eventUsecase.CreateEvent(userID, req.GetTitle(), req.GetDescription(), req.GetStartTime().AsTime(), req.GetEndTime().AsTime())
 	if err != nil {
 		return nil, err
 	}

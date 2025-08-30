@@ -3,6 +3,7 @@ syntax = "proto3";
 package event.v1;
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/qkitzero/event-service/gen/go/event/v1";
 
@@ -18,6 +19,8 @@ service EventService {
 message CreateEventRequest {
   string title = 1;
   string description = 2;
+  google.protobuf.Timestamp start_time = 3;
+  google.protobuf.Timestamp end_time = 4;
 }
 
 message CreateEventResponse {

@@ -20,6 +20,8 @@ func (r *eventRepository) Create(e event.Event) error {
 			ID:          e.ID(),
 			Title:       e.Title(),
 			Description: e.Description(),
+			StartTime:   e.StartTime(),
+			EndTime:     e.EndTime(),
 			CreatedAt:   e.CreatedAt(),
 		}
 

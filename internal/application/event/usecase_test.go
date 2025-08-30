@@ -3,6 +3,7 @@ package event
 import (
 	"errors"
 	"testing"
+	"time"
 
 	"go.uber.org/mock/gomock"
 
@@ -17,13 +18,15 @@ func TestCreateEvent(t *testing.T) {
 		userID      string
 		title       string
 		description string
+		startTime   time.Time
+		endTime     time.Time
 		createErr   error
 	}{
-		{"success create event", true, "6d322c66-bf4d-427a-970c-874f3745f653", "title", "description", nil},
-		{"failure empty user id", false, "", "title", "description", nil},
-		{"failure empty title", false, "6d322c66-bf4d-427a-970c-874f3745f653", "", "description", nil},
-		{"failure empty description", false, "6d322c66-bf4d-427a-970c-874f3745f653", "title", "", nil},
-		{"failure create error", false, "6d322c66-bf4d-427a-970c-874f3745f653", "title", "description", errors.New("create error")},
+		{"success create event", true, "6d322c66-bf4d-427a-970c-874f3745f653", "title", "description", time.Now(), time.Now(), nil},
+		{"failure empty user id", false, "", "title", "description", time.Now(), time.Now(), nil},
+		{"failure empty title", false, "6d322c66-bf4d-427a-970c-874f3745f653", "", "description", time.Now(), time.Now(), nil},
+		{"failure empty description", false, "6d322c66-bf4d-427a-970c-874f3745f653", "title", "", time.Now(), time.Now(), nil},
+		{"failure create error", false, "6d322c66-bf4d-427a-970c-874f3745f653", "title", "description", time.Now(), time.Now(), errors.New("create error")},
 	}
 	for _, tt := range tests {
 		tt := tt
@@ -38,7 +41,7 @@ func TestCreateEvent(t *testing.T) {
 
 			eventUsecase := NewEventUsecase(mockEventRepository)
 
-			_, err := eventUsecase.CreateEvent(tt.userID, tt.title, tt.description)
+			_, err := eventUsecase.CreateEvent(tt.userID, tt.title, tt.description, tt.startTime, tt.endTime)
 			if tt.success && err != nil {
 				t.Errorf("expected no error, but got %v", err)
 			}

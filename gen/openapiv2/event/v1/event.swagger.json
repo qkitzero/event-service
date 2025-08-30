@@ -86,6 +86,14 @@
         },
         "description": {
           "type": "string"
+        },
+        "startTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endTime": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
