@@ -11,6 +11,7 @@ package mocks
 
 import (
 	reflect "reflect"
+	time "time"
 
 	event "github.com/qkitzero/event-service/internal/domain/event"
 	gomock "go.uber.org/mock/gomock"
@@ -41,16 +42,16 @@ func (m *MockEventUsecase) EXPECT() *MockEventUsecaseMockRecorder {
 }
 
 // CreateEvent mocks base method.
-func (m *MockEventUsecase) CreateEvent(userIDStr, titleStr, descriptionStr string) (event.Event, error) {
+func (m *MockEventUsecase) CreateEvent(userIDStr, titleStr, descriptionStr string, startTime, endTime time.Time) (event.Event, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateEvent", userIDStr, titleStr, descriptionStr)
+	ret := m.ctrl.Call(m, "CreateEvent", userIDStr, titleStr, descriptionStr, startTime, endTime)
 	ret0, _ := ret[0].(event.Event)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateEvent indicates an expected call of CreateEvent.
-func (mr *MockEventUsecaseMockRecorder) CreateEvent(userIDStr, titleStr, descriptionStr any) *gomock.Call {
+func (mr *MockEventUsecaseMockRecorder) CreateEvent(userIDStr, titleStr, descriptionStr, startTime, endTime any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEvent", reflect.TypeOf((*MockEventUsecase)(nil).CreateEvent), userIDStr, titleStr, descriptionStr)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEvent", reflect.TypeOf((*MockEventUsecase)(nil).CreateEvent), userIDStr, titleStr, descriptionStr, startTime, endTime)
 }
