@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	eventv1 "github.com/qkitzero/event-service/gen/go/event/v1"
 	"github.com/qkitzero/event-service/internal/domain/event"
@@ -22,12 +23,14 @@ func TestCreateEvent(t *testing.T) {
 		ctx            context.Context
 		title          string
 		description    string
+		startTime      *timestamppb.Timestamp
+		endTime        *timestamppb.Timestamp
 		getUserErr     error
 		createEventErr error
 	}{
-		{"success create event", true, context.Background(), "title", "description", nil, nil},
-		{"failure get user error", false, context.Background(), "title", "description", fmt.Errorf("get user error"), nil},
-		{"failure create event error", false, context.Background(), "title", "description", nil, fmt.Errorf("create event error")},
+		{"success create event", true, context.Background(), "title", "description", timestamppb.Now(), timestamppb.Now(), nil, nil},
+		{"failure get user error", false, context.Background(), "title", "description", timestamppb.Now(), timestamppb.Now(), fmt.Errorf("get user error"), nil},
+		{"failure create event error", false, context.Background(), "title", "description", timestamppb.Now(), timestamppb.Now(), nil, fmt.Errorf("create event error")},
 	}
 	for _, tt := range tests {
 		tt := tt
@@ -42,7 +45,7 @@ func TestCreateEvent(t *testing.T) {
 			mockEvent := mocksevent.NewMockEvent(ctrl)
 			mockUserID := "mockUserID"
 			mockUserUsecase.EXPECT().GetUser(tt.ctx).Return(mockUserID, tt.getUserErr).AnyTimes()
-			mockEventUsecase.EXPECT().CreateEvent(mockUserID, tt.title, tt.description).Return(mockEvent, tt.createEventErr).AnyTimes()
+			mockEventUsecase.EXPECT().CreateEvent(mockUserID, tt.title, tt.description, tt.startTime.AsTime(), tt.endTime.AsTime()).Return(mockEvent, tt.createEventErr).AnyTimes()
 			mockEventID := event.NewEventID()
 			mockEvent.EXPECT().ID().Return(mockEventID).AnyTimes()
 
@@ -51,6 +54,8 @@ func TestCreateEvent(t *testing.T) {
 			req := &eventv1.CreateEventRequest{
 				Title:       tt.title,
 				Description: tt.description,
+				StartTime:   tt.startTime,
+				EndTime:     tt.endTime,
 			}
 
 			_, err := eventHandler.CreateEvent(tt.ctx, req)
