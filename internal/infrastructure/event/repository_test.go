@@ -30,8 +30,8 @@ func TestCreate(t *testing.T) {
 			setup: func(mock sqlmock.Sqlmock, event event.Event) {
 				mock.ExpectBegin()
 
-				mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO "events" ("id","title","description","created_at") VALUES ($1,$2,$3,$4)`)).
-					WithArgs(event.ID(), event.Title(), event.Description(), testutil.AnyTime{}).
+				mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO "events" ("id","title","description","start_time","end_time","created_at") VALUES ($1,$2,$3,$4,$5,$6)`)).
+					WithArgs(event.ID(), event.Title(), event.Description(), testutil.AnyTime{}, testutil.AnyTime{}, testutil.AnyTime{}).
 					WillReturnResult(sqlmock.NewResult(1, 1))
 
 				mock.ExpectCommit()
@@ -43,8 +43,8 @@ func TestCreate(t *testing.T) {
 			setup: func(mock sqlmock.Sqlmock, event event.Event) {
 				mock.ExpectBegin()
 
-				mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO "events" ("id","title","description","created_at") VALUES ($1,$2,$3,$4)`)).
-					WithArgs(event.ID(), event.Title(), event.Description(), testutil.AnyTime{}).
+				mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO "events" ("id","title","description","start_time","end_time","created_at") VALUES ($1,$2,$3,$4,$5,$6)`)).
+					WithArgs(event.ID(), event.Title(), event.Description(), testutil.AnyTime{}, testutil.AnyTime{}, testutil.AnyTime{}).
 					WillReturnError(errors.New("create event error"))
 
 				mock.ExpectRollback()
@@ -73,6 +73,8 @@ func TestCreate(t *testing.T) {
 			mockEvent.EXPECT().ID().Return(event.EventID{UUID: uuid.New()}).AnyTimes()
 			mockEvent.EXPECT().Title().Return(event.Title("title")).AnyTimes()
 			mockEvent.EXPECT().Description().Return(event.Description("description")).AnyTimes()
+			mockEvent.EXPECT().StartTime().Return(time.Now()).AnyTimes()
+			mockEvent.EXPECT().EndTime().Return(time.Now()).AnyTimes()
 			mockEvent.EXPECT().CreatedAt().Return(time.Now()).AnyTimes()
 
 			tt.setup(mock, mockEvent)
