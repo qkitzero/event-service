@@ -13,6 +13,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/qkitzero/event-service/internal/domain/event"
+	"github.com/qkitzero/event-service/internal/domain/user"
 	mocksevent "github.com/qkitzero/event-service/mocks/domain/event"
 	"github.com/qkitzero/event-service/testutil"
 )
@@ -30,8 +31,8 @@ func TestCreate(t *testing.T) {
 			setup: func(mock sqlmock.Sqlmock, event event.Event) {
 				mock.ExpectBegin()
 
-				mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO "events" ("id","title","description","start_time","end_time","created_at") VALUES ($1,$2,$3,$4,$5,$6)`)).
-					WithArgs(event.ID(), event.Title(), event.Description(), testutil.AnyTime{}, testutil.AnyTime{}, testutil.AnyTime{}).
+				mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO "events" ("id","user_id","title","description","start_time","end_time","created_at") VALUES ($1,$2,$3,$4,$5,$6,$7)`)).
+					WithArgs(event.ID(), event.UserID(), event.Title(), event.Description(), testutil.AnyTime{}, testutil.AnyTime{}, testutil.AnyTime{}).
 					WillReturnResult(sqlmock.NewResult(1, 1))
 
 				mock.ExpectCommit()
@@ -43,8 +44,8 @@ func TestCreate(t *testing.T) {
 			setup: func(mock sqlmock.Sqlmock, event event.Event) {
 				mock.ExpectBegin()
 
-				mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO "events" ("id","title","description","start_time","end_time","created_at") VALUES ($1,$2,$3,$4,$5,$6)`)).
-					WithArgs(event.ID(), event.Title(), event.Description(), testutil.AnyTime{}, testutil.AnyTime{}, testutil.AnyTime{}).
+				mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO "events" ("id","user_id","title","description","start_time","end_time","created_at") VALUES ($1,$2,$3,$4,$5,$6,$7)`)).
+					WithArgs(event.ID(), event.UserID(), event.Title(), event.Description(), testutil.AnyTime{}, testutil.AnyTime{}, testutil.AnyTime{}).
 					WillReturnError(errors.New("create event error"))
 
 				mock.ExpectRollback()
@@ -71,6 +72,7 @@ func TestCreate(t *testing.T) {
 
 			mockEvent := mocksevent.NewMockEvent(ctrl)
 			mockEvent.EXPECT().ID().Return(event.EventID{UUID: uuid.New()}).AnyTimes()
+			mockEvent.EXPECT().UserID().Return(user.UserID{UUID: uuid.New()}).AnyTimes()
 			mockEvent.EXPECT().Title().Return(event.Title("title")).AnyTimes()
 			mockEvent.EXPECT().Description().Return(event.Description("description")).AnyTimes()
 			mockEvent.EXPECT().StartTime().Return(time.Now()).AnyTimes()
