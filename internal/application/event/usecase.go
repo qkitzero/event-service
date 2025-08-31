@@ -9,6 +9,7 @@ import (
 
 type EventUsecase interface {
 	CreateEvent(userIDStr, titleStr, descriptionStr string, startTime, endTime time.Time) (event.Event, error)
+	ListEvents(userIDStr string) ([]event.Event, error)
 }
 
 type eventUsecase struct {
@@ -42,4 +43,18 @@ func (s *eventUsecase) CreateEvent(userIDStr, titleStr, descriptionStr string, s
 	}
 
 	return e, nil
+}
+
+func (s *eventUsecase) ListEvents(userIDStr string) ([]event.Event, error) {
+	userID, err := user.NewUserIDFromString(userIDStr)
+	if err != nil {
+		return nil, err
+	}
+
+	events, err := s.repo.ListByUserID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return events, nil
 }
