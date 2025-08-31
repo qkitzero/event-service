@@ -13,6 +13,7 @@ import (
 	reflect "reflect"
 
 	event "github.com/qkitzero/event-service/internal/domain/event"
+	user "github.com/qkitzero/event-service/internal/domain/user"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -52,4 +53,19 @@ func (m *MockEventRepository) Create(event event.Event) error {
 func (mr *MockEventRepositoryMockRecorder) Create(event any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockEventRepository)(nil).Create), event)
+}
+
+// ListByUserID mocks base method.
+func (m *MockEventRepository) ListByUserID(userID user.UserID) ([]event.Event, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListByUserID", userID)
+	ret0, _ := ret[0].([]event.Event)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListByUserID indicates an expected call of ListByUserID.
+func (mr *MockEventRepositoryMockRecorder) ListByUserID(userID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByUserID", reflect.TypeOf((*MockEventRepository)(nil).ListByUserID), userID)
 }

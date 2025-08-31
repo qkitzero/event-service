@@ -8,7 +8,8 @@ import (
 )
 
 type EventUsecase interface {
-	CreateEvent(userIDStr, titleStr, descriptionStr string) (event.Event, error)
+	CreateEvent(userIDStr, titleStr, descriptionStr string, startTime, endTime time.Time) (event.Event, error)
+	ListEvents(userIDStr string) ([]event.Event, error)
 }
 
 type eventUsecase struct {
@@ -19,7 +20,7 @@ func NewEventUsecase(repo event.EventRepository) EventUsecase {
 	return &eventUsecase{repo: repo}
 }
 
-func (s *eventUsecase) CreateEvent(userIDStr, titleStr, descriptionStr string) (event.Event, error) {
+func (s *eventUsecase) CreateEvent(userIDStr, titleStr, descriptionStr string, startTime, endTime time.Time) (event.Event, error) {
 	userID, err := user.NewUserIDFromString(userIDStr)
 	if err != nil {
 		return nil, err
@@ -35,13 +36,25 @@ func (s *eventUsecase) CreateEvent(userIDStr, titleStr, descriptionStr string) (
 		return nil, err
 	}
 
-	now := time.Now()
-
-	e := event.NewEvent(event.NewEventID(), userID, title, description, now)
+	e := event.NewEvent(event.NewEventID(), userID, title, description, startTime, endTime, time.Now())
 
 	if err := s.repo.Create(e); err != nil {
 		return nil, err
 	}
 
 	return e, nil
+}
+
+func (s *eventUsecase) ListEvents(userIDStr string) ([]event.Event, error) {
+	userID, err := user.NewUserIDFromString(userIDStr)
+	if err != nil {
+		return nil, err
+	}
+
+	events, err := s.repo.ListByUserID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return events, nil
 }
