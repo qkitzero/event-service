@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"go.uber.org/mock/gomock"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -46,8 +47,7 @@ func TestCreateEvent(t *testing.T) {
 			mockUserID := "mockUserID"
 			mockUserUsecase.EXPECT().GetUser(tt.ctx).Return(mockUserID, tt.getUserErr).AnyTimes()
 			mockEventUsecase.EXPECT().CreateEvent(mockUserID, tt.title, tt.description, tt.startTime.AsTime(), tt.endTime.AsTime()).Return(mockEvent, tt.createEventErr).AnyTimes()
-			mockEventID := event.NewEventID()
-			mockEvent.EXPECT().ID().Return(mockEventID).AnyTimes()
+			mockEvent.EXPECT().ID().Return(event.NewEventID()).AnyTimes()
 
 			eventHandler := NewEventHandler(mockUserUsecase, mockEventUsecase)
 
@@ -59,6 +59,54 @@ func TestCreateEvent(t *testing.T) {
 			}
 
 			_, err := eventHandler.CreateEvent(tt.ctx, req)
+			if tt.success && err != nil {
+				t.Errorf("expected no error, but got %v", err)
+			}
+			if !tt.success && err == nil {
+				t.Errorf("expected error, but got nil")
+			}
+		})
+	}
+}
+
+func TestListEvents(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name          string
+		success       bool
+		ctx           context.Context
+		getUserErr    error
+		listEventsErr error
+	}{
+		{"success list events", true, context.Background(), nil, nil},
+		{"failure get user error", false, context.Background(), fmt.Errorf("get user error"), nil},
+		{"failure list events error", false, context.Background(), nil, fmt.Errorf("list events error")},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			mockUserUsecase := mocksappuser.NewMockUserUsecase(ctrl)
+			mockEventUsecase := mocksappevent.NewMockEventUsecase(ctrl)
+			mockEvent := mocksevent.NewMockEvent(ctrl)
+			mockUserID := "mockUserID"
+			mockUserUsecase.EXPECT().GetUser(tt.ctx).Return(mockUserID, tt.getUserErr).AnyTimes()
+			mockEventUsecase.EXPECT().ListEvents(mockUserID).Return([]event.Event{mockEvent}, tt.listEventsErr).AnyTimes()
+			mockEvent.EXPECT().ID().Return(event.NewEventID()).AnyTimes()
+			mockEvent.EXPECT().Title().Return(event.Title("title")).AnyTimes()
+			mockEvent.EXPECT().Description().Return(event.Description("description")).AnyTimes()
+			mockEvent.EXPECT().StartTime().Return(time.Now()).AnyTimes()
+			mockEvent.EXPECT().EndTime().Return(time.Now()).AnyTimes()
+
+			eventHandler := NewEventHandler(mockUserUsecase, mockEventUsecase)
+
+			req := &eventv1.ListEventsRequest{}
+
+			_, err := eventHandler.ListEvents(tt.ctx, req)
 			if tt.success && err != nil {
 				t.Errorf("expected no error, but got %v", err)
 			}
