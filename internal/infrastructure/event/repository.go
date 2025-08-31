@@ -18,6 +18,7 @@ func (r *eventRepository) Create(e event.Event) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		eventModel := EventModel{
 			ID:          e.ID(),
+			UserID:      e.UserID(),
 			Title:       e.Title(),
 			Description: e.Description(),
 			StartTime:   e.StartTime(),
