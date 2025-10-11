@@ -9,3 +9,4 @@ limits:
     "util/": 100
 ignore:
   - "gen/*"
+  - "mocks/*"
