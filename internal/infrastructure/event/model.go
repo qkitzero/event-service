@@ -15,6 +15,7 @@ type EventModel struct {
 	StartTime   time.Time
 	EndTime     time.Time
 	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 func (EventModel) TableName() string {
