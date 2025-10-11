@@ -41,6 +41,23 @@ func (h *EventHandler) CreateEvent(ctx context.Context, req *eventv1.CreateEvent
 	}, nil
 }
 
+func (h *EventHandler) UpdateEvent(ctx context.Context, req *eventv1.UpdateEventRequest) (*eventv1.UpdateEventResponse, error) {
+	event, err := h.eventUsecase.UpdateEvent(req.GetEvent().GetId(), req.GetEvent().GetTitle(), req.GetEvent().GetDescription(), req.GetEvent().GetStartTime().AsTime(), req.GetEvent().GetEndTime().AsTime())
+	if err != nil {
+		return nil, err
+	}
+
+	return &eventv1.UpdateEventResponse{
+		Event: &eventv1.Event{
+			Id:          event.ID().String(),
+			Title:       event.Title().String(),
+			Description: event.Description().String(),
+			StartTime:   timestamppb.New(event.StartTime()),
+			EndTime:     timestamppb.New(event.EndTime()),
+		},
+	}, nil
+}
+
 func (h *EventHandler) ListEvents(ctx context.Context, req *eventv1.ListEventsRequest) (*eventv1.ListEventsResponse, error) {
 	userID, err := h.userService.GetUser(ctx)
 	if err != nil {
