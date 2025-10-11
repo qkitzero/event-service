@@ -1,5 +1,5 @@
 limits:
-  files: 15
+  files: 20
   lines:
     "": 100
     "build/": 100
