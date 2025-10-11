@@ -35,15 +35,16 @@ func TestNewEvent(t *testing.T) {
 		startTime   time.Time
 		endTime     time.Time
 		createdAt   time.Time
+		updatedAt   time.Time
 	}{
-		{"success new event", true, id, userID, title, description, time.Now(), time.Now(), time.Now()},
+		{"success new event", true, id, userID, title, description, time.Now(), time.Now(), time.Now(), time.Now()},
 	}
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			event := NewEvent(tt.id, tt.userID, tt.title, tt.description, tt.startTime, tt.endTime, tt.createdAt)
+			event := NewEvent(tt.id, tt.userID, tt.title, tt.description, tt.startTime, tt.endTime, tt.createdAt, tt.updatedAt)
 			if tt.success && event.ID() != tt.id {
 				t.Errorf("ID() = %v, want %v", event.ID(), tt.id)
 			}
@@ -64,6 +65,9 @@ func TestNewEvent(t *testing.T) {
 			}
 			if tt.success && !event.CreatedAt().Equal(tt.createdAt) {
 				t.Errorf("CreatedAt() = %v, want %v", event.CreatedAt(), tt.createdAt)
+			}
+			if tt.success && !event.UpdateAt().Equal(tt.updatedAt) {
+				t.Errorf("UpdateAt() = %v, want %v", event.UpdateAt(), tt.updatedAt)
 			}
 		})
 	}
