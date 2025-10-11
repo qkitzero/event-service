@@ -126,6 +126,32 @@ func (mr *MockEventMockRecorder) Title() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Title", reflect.TypeOf((*MockEvent)(nil).Title))
 }
 
+// Update mocks base method.
+func (m *MockEvent) Update(title event.Title, description event.Description, startTime, endTime time.Time) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "Update", title, description, startTime, endTime)
+}
+
+// Update indicates an expected call of Update.
+func (mr *MockEventMockRecorder) Update(title, description, startTime, endTime any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockEvent)(nil).Update), title, description, startTime, endTime)
+}
+
+// UpdateAt mocks base method.
+func (m *MockEvent) UpdateAt() time.Time {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateAt")
+	ret0, _ := ret[0].(time.Time)
+	return ret0
+}
+
+// UpdateAt indicates an expected call of UpdateAt.
+func (mr *MockEventMockRecorder) UpdateAt() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAt", reflect.TypeOf((*MockEvent)(nil).UpdateAt))
+}
+
 // UserID mocks base method.
 func (m *MockEvent) UserID() user.UserID {
 	m.ctrl.T.Helper()
