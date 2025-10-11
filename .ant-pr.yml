@@ -2,7 +2,7 @@ limits:
   files: 15
   lines:
     "build/": 100
-    "cmd": 100
+    "cmd/": 100
     "internal/": 200
     "proto/": 50
     "util/": 100
