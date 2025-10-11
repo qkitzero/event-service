@@ -7,3 +7,5 @@ limits:
     "internal/": 200
     "proto/": 50
     "util/": 100
+ignore:
+  - "gen/*"
