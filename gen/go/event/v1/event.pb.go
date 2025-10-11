@@ -172,6 +172,53 @@ func (x *CreateEventRequest) GetEndTime() *timestamppb.Timestamp {
 	return nil
 }
 
+type CreateEventResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	EventId string `protobuf:"bytes,1,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
+}
+
+func (x *CreateEventResponse) Reset() {
+	*x = CreateEventResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_event_v1_event_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CreateEventResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateEventResponse) ProtoMessage() {}
+
+func (x *CreateEventResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_event_v1_event_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateEventResponse.ProtoReflect.Descriptor instead.
+func (*CreateEventResponse) Descriptor() ([]byte, []int) {
+	return file_event_v1_event_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *CreateEventResponse) GetEventId() string {
+	if x != nil {
+		return x.EventId
+	}
+	return ""
+}
+
 type UpdateEventRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -183,7 +230,7 @@ type UpdateEventRequest struct {
 func (x *UpdateEventRequest) Reset() {
 	*x = UpdateEventRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_event_v1_event_proto_msgTypes[2]
+		mi := &file_event_v1_event_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -196,7 +243,7 @@ func (x *UpdateEventRequest) String() string {
 func (*UpdateEventRequest) ProtoMessage() {}
 
 func (x *UpdateEventRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_event_v1_event_proto_msgTypes[2]
+	mi := &file_event_v1_event_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -209,7 +256,7 @@ func (x *UpdateEventRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateEventRequest.ProtoReflect.Descriptor instead.
 func (*UpdateEventRequest) Descriptor() ([]byte, []int) {
-	return file_event_v1_event_proto_rawDescGZIP(), []int{2}
+	return file_event_v1_event_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *UpdateEventRequest) GetEvent() *Event {
@@ -230,7 +277,7 @@ type UpdateEventResponse struct {
 func (x *UpdateEventResponse) Reset() {
 	*x = UpdateEventResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_event_v1_event_proto_msgTypes[3]
+		mi := &file_event_v1_event_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -243,7 +290,7 @@ func (x *UpdateEventResponse) String() string {
 func (*UpdateEventResponse) ProtoMessage() {}
 
 func (x *UpdateEventResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_event_v1_event_proto_msgTypes[3]
+	mi := &file_event_v1_event_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -256,7 +303,7 @@ func (x *UpdateEventResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateEventResponse.ProtoReflect.Descriptor instead.
 func (*UpdateEventResponse) Descriptor() ([]byte, []int) {
-	return file_event_v1_event_proto_rawDescGZIP(), []int{3}
+	return file_event_v1_event_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *UpdateEventResponse) GetEvent() *Event {
@@ -264,53 +311,6 @@ func (x *UpdateEventResponse) GetEvent() *Event {
 		return x.Event
 	}
 	return nil
-}
-
-type CreateEventResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	EventId string `protobuf:"bytes,1,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
-}
-
-func (x *CreateEventResponse) Reset() {
-	*x = CreateEventResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_event_v1_event_proto_msgTypes[4]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *CreateEventResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateEventResponse) ProtoMessage() {}
-
-func (x *CreateEventResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_event_v1_event_proto_msgTypes[4]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateEventResponse.ProtoReflect.Descriptor instead.
-func (*CreateEventResponse) Descriptor() ([]byte, []int) {
-	return file_event_v1_event_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *CreateEventResponse) GetEventId() string {
-	if x != nil {
-		return x.EventId
-	}
-	return ""
 }
 
 type ListEventsRequest struct {
@@ -431,18 +431,18 @@ var file_event_v1_event_proto_rawDesc = []byte{
 	0x08, 0x65, 0x6e, 0x64, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32,
 	0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
 	0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x07, 0x65, 0x6e, 0x64,
-	0x54, 0x69, 0x6d, 0x65, 0x22, 0x3b, 0x0a, 0x12, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x76,
-	0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x25, 0x0a, 0x05, 0x65, 0x76,
+	0x54, 0x69, 0x6d, 0x65, 0x22, 0x30, 0x0a, 0x13, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x19, 0x0a, 0x08, 0x65,
+	0x76, 0x65, 0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x65,
+	0x76, 0x65, 0x6e, 0x74, 0x49, 0x64, 0x22, 0x3b, 0x0a, 0x12, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x25, 0x0a, 0x05,
+	0x65, 0x76, 0x65, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x65, 0x76,
+	0x65, 0x6e, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x05, 0x65, 0x76,
+	0x65, 0x6e, 0x74, 0x22, 0x3c, 0x0a, 0x13, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x76, 0x65,
+	0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x25, 0x0a, 0x05, 0x65, 0x76,
 	0x65, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x65, 0x76, 0x65, 0x6e,
 	0x74, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x05, 0x65, 0x76, 0x65, 0x6e,
-	0x74, 0x22, 0x3c, 0x0a, 0x13, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x76, 0x65, 0x6e, 0x74,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x25, 0x0a, 0x05, 0x65, 0x76, 0x65, 0x6e,
-	0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x2e,
-	0x76, 0x31, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x05, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x22,
-	0x30, 0x0a, 0x13, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x19, 0x0a, 0x08, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x5f,
-	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x49,
-	0x64, 0x22, 0x13, 0x0a, 0x11, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x52,
+	0x74, 0x22, 0x13, 0x0a, 0x11, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x52,
 	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x3d, 0x0a, 0x12, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x76,
 	0x65, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x27, 0x0a, 0x06,
 	0x65, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x65,
@@ -489,9 +489,9 @@ var file_event_v1_event_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_event_v1_event_proto_goTypes = []any{
 	(*Event)(nil),                 // 0: event.v1.Event
 	(*CreateEventRequest)(nil),    // 1: event.v1.CreateEventRequest
-	(*UpdateEventRequest)(nil),    // 2: event.v1.UpdateEventRequest
-	(*UpdateEventResponse)(nil),   // 3: event.v1.UpdateEventResponse
-	(*CreateEventResponse)(nil),   // 4: event.v1.CreateEventResponse
+	(*CreateEventResponse)(nil),   // 2: event.v1.CreateEventResponse
+	(*UpdateEventRequest)(nil),    // 3: event.v1.UpdateEventRequest
+	(*UpdateEventResponse)(nil),   // 4: event.v1.UpdateEventResponse
 	(*ListEventsRequest)(nil),     // 5: event.v1.ListEventsRequest
 	(*ListEventsResponse)(nil),    // 6: event.v1.ListEventsResponse
 	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
@@ -505,10 +505,10 @@ var file_event_v1_event_proto_depIdxs = []int32{
 	0,  // 5: event.v1.UpdateEventResponse.event:type_name -> event.v1.Event
 	0,  // 6: event.v1.ListEventsResponse.events:type_name -> event.v1.Event
 	1,  // 7: event.v1.EventService.CreateEvent:input_type -> event.v1.CreateEventRequest
-	2,  // 8: event.v1.EventService.UpdateEvent:input_type -> event.v1.UpdateEventRequest
+	3,  // 8: event.v1.EventService.UpdateEvent:input_type -> event.v1.UpdateEventRequest
 	5,  // 9: event.v1.EventService.ListEvents:input_type -> event.v1.ListEventsRequest
-	4,  // 10: event.v1.EventService.CreateEvent:output_type -> event.v1.CreateEventResponse
-	3,  // 11: event.v1.EventService.UpdateEvent:output_type -> event.v1.UpdateEventResponse
+	2,  // 10: event.v1.EventService.CreateEvent:output_type -> event.v1.CreateEventResponse
+	4,  // 11: event.v1.EventService.UpdateEvent:output_type -> event.v1.UpdateEventResponse
 	6,  // 12: event.v1.EventService.ListEvents:output_type -> event.v1.ListEventsResponse
 	10, // [10:13] is the sub-list for method output_type
 	7,  // [7:10] is the sub-list for method input_type
@@ -548,7 +548,7 @@ func file_event_v1_event_proto_init() {
 			}
 		}
 		file_event_v1_event_proto_msgTypes[2].Exporter = func(v any, i int) any {
-			switch v := v.(*UpdateEventRequest); i {
+			switch v := v.(*CreateEventResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -560,7 +560,7 @@ func file_event_v1_event_proto_init() {
 			}
 		}
 		file_event_v1_event_proto_msgTypes[3].Exporter = func(v any, i int) any {
-			switch v := v.(*UpdateEventResponse); i {
+			switch v := v.(*UpdateEventRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -572,7 +572,7 @@ func file_event_v1_event_proto_init() {
 			}
 		}
 		file_event_v1_event_proto_msgTypes[4].Exporter = func(v any, i int) any {
-			switch v := v.(*CreateEventResponse); i {
+			switch v := v.(*UpdateEventResponse); i {
 			case 0:
 				return &v.state
 			case 1:
