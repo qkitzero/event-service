@@ -46,6 +46,36 @@
         "tags": [
           "EventService"
         ]
+      },
+      "put": {
+        "operationId": "EventService_UpdateEvent",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateEventResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1UpdateEventRequest"
+            }
+          }
+        ],
+        "tags": [
+          "EventService"
+        ]
       }
     },
     "/v1/events": {
@@ -158,6 +188,22 @@
             "type": "object",
             "$ref": "#/definitions/v1Event"
           }
+        }
+      }
+    },
+    "v1UpdateEventRequest": {
+      "type": "object",
+      "properties": {
+        "event": {
+          "$ref": "#/definitions/v1Event"
+        }
+      }
+    },
+    "v1UpdateEventResponse": {
+      "type": "object",
+      "properties": {
+        "event": {
+          "$ref": "#/definitions/v1Event"
         }
       }
     }
