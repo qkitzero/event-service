@@ -66,8 +66,71 @@ func TestNewEvent(t *testing.T) {
 			if tt.success && !event.CreatedAt().Equal(tt.createdAt) {
 				t.Errorf("CreatedAt() = %v, want %v", event.CreatedAt(), tt.createdAt)
 			}
-			if tt.success && !event.UpdateAt().Equal(tt.updatedAt) {
-				t.Errorf("UpdateAt() = %v, want %v", event.UpdateAt(), tt.updatedAt)
+			if tt.success && !event.UpdatedAt().Equal(tt.updatedAt) {
+				t.Errorf("UpdateAt() = %v, want %v", event.UpdatedAt(), tt.updatedAt)
+			}
+		})
+	}
+}
+
+func TestUpdate(t *testing.T) {
+	t.Parallel()
+	id, err := NewEventIDFromString("fe8c2263-bbac-4bb9-a41d-b04f5afc4425")
+	if err != nil {
+		t.Errorf("failed to new event id: %v", err)
+	}
+	userID, err := user.NewUserIDFromString("6d322c66-bf4d-427a-970c-874f3745f653")
+	if err != nil {
+		t.Errorf("failed to new user id: %v", err)
+	}
+	title, err := NewTitle("title")
+	if err != nil {
+		t.Errorf("failed to new title: %v", err)
+	}
+	description, err := NewDescription("description")
+	if err != nil {
+		t.Errorf("failed to new description: %v", err)
+	}
+	updatedTitle, err := NewTitle("updated title")
+	if err != nil {
+		t.Errorf("failed to new updated title: %v", err)
+	}
+	updatedDescription, err := NewDescription("updated description")
+	if err != nil {
+		t.Errorf("failed to new updated description: %v", err)
+	}
+	event := NewEvent(id, userID, title, description, time.Now(), time.Now(), time.Now(), time.Now())
+	tests := []struct {
+		name               string
+		success            bool
+		event              Event
+		updatedTitle       Title
+		updatedDescription Description
+		updatedStartTime   time.Time
+		updatedEndTime     time.Time
+	}{
+		{"success update event", true, event, updatedTitle, updatedDescription, time.Now().Add(1 * time.Hour), time.Now().Add(2 * time.Hour)},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.event.Update(tt.updatedTitle, tt.updatedDescription, tt.updatedStartTime, tt.updatedEndTime)
+			if tt.success && tt.event.Title() != tt.updatedTitle {
+				t.Errorf("Title() = %v, want %v", tt.event.Title(), tt.updatedTitle)
+			}
+			if tt.success && tt.event.Description() != tt.updatedDescription {
+				t.Errorf("Description() = %v, want %v", tt.event.Description(), tt.updatedDescription)
+			}
+			if tt.success && !tt.event.StartTime().Equal(tt.updatedStartTime) {
+				t.Errorf("StartTime() = %v, want %v", tt.event.StartTime(), tt.updatedStartTime)
+			}
+			if tt.success && !tt.event.EndTime().Equal(tt.updatedEndTime) {
+				t.Errorf("EndTime() = %v, want %v", tt.event.EndTime(), tt.updatedEndTime)
+			}
+			if tt.success && !tt.event.CreatedAt().Before(tt.event.UpdatedAt()) {
+				t.Errorf("CreatedAt() = %v, UpdatedAt() = %v, want CreatedAt < UpdatedAt", tt.event.CreatedAt(), tt.event.UpdatedAt())
 			}
 		})
 	}
