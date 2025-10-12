@@ -99,6 +99,87 @@ func TestCreate(t *testing.T) {
 	}
 }
 
+func TestUpdate(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name    string
+		success bool
+		setup   func(mock sqlmock.Sqlmock, event event.Event)
+	}{
+		{
+			name:    "success update event",
+			success: true,
+			setup: func(mock sqlmock.Sqlmock, event event.Event) {
+				mock.ExpectBegin()
+
+				mock.ExpectExec(regexp.QuoteMeta(`UPDATE "events" SET "user_id"=$1,"title"=$2,"description"=$3,"start_time"=$4,"end_time"=$5,"created_at"=$6,"updated_at"=$7 WHERE "id" = $8`)).
+					WithArgs(event.UserID(), event.Title(), event.Description(), testutil.AnyTime{}, testutil.AnyTime{}, testutil.AnyTime{}, testutil.AnyTime{}, event.ID()).
+					WillReturnResult(sqlmock.NewResult(1, 1))
+
+				mock.ExpectCommit()
+			},
+		},
+		{
+			name:    "failure update event error",
+			success: false,
+			setup: func(mock sqlmock.Sqlmock, event event.Event) {
+				mock.ExpectBegin()
+
+				mock.ExpectExec(regexp.QuoteMeta(`UPDATE "events" SET "user_id"=$1,"title"=$2,"description"=$3,"start_time"=$4,"end_time"=$5,"created_at"=$6,"updated_at"=$7 WHERE "id" = $8`)).
+					WithArgs(event.UserID(), event.Title(), event.Description(), testutil.AnyTime{}, testutil.AnyTime{}, testutil.AnyTime{}, testutil.AnyTime{}, event.ID()).
+					WillReturnError(errors.New("update event error"))
+
+				mock.ExpectRollback()
+			},
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			sqlDB, mock, err := sqlmock.New()
+			if err != nil {
+				t.Errorf("failed to new sqlmock: %s", err)
+			}
+
+			gormDB, err := gorm.Open(postgres.New(postgres.Config{Conn: sqlDB}), &gorm.Config{})
+			if err != nil {
+				t.Errorf("failed to open gorm: %s", err)
+			}
+
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			mockEvent := mocksevent.NewMockEvent(ctrl)
+			mockEvent.EXPECT().ID().Return(event.EventID{UUID: uuid.New()}).AnyTimes()
+			mockEvent.EXPECT().UserID().Return(user.UserID{UUID: uuid.New()}).AnyTimes()
+			mockEvent.EXPECT().Title().Return(event.Title("title")).AnyTimes()
+			mockEvent.EXPECT().Description().Return(event.Description("description")).AnyTimes()
+			mockEvent.EXPECT().StartTime().Return(time.Now()).AnyTimes()
+			mockEvent.EXPECT().EndTime().Return(time.Now()).AnyTimes()
+			mockEvent.EXPECT().CreatedAt().Return(time.Now()).AnyTimes()
+			mockEvent.EXPECT().UpdatedAt().Return(time.Now()).AnyTimes()
+
+			tt.setup(mock, mockEvent)
+
+			repo := NewEventRepository(gormDB)
+
+			err = repo.Update(mockEvent)
+			if tt.success && err != nil {
+				t.Errorf("expected no error, but got %v", err)
+			}
+			if !tt.success && err == nil {
+				t.Errorf("expected error, but got nil")
+			}
+
+			if err := mock.ExpectationsWereMet(); err != nil {
+				t.Errorf("there were unfulfilled expectations: %s", err)
+			}
+		})
+	}
+}
+
 func TestListByUserID(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
