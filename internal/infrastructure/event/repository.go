@@ -27,7 +27,7 @@ func (r *eventRepository) Create(e event.Event) error {
 			StartTime:   e.StartTime(),
 			EndTime:     e.EndTime(),
 			CreatedAt:   e.CreatedAt(),
-			UpdatedAt:   e.UpdateAt(),
+			UpdatedAt:   e.UpdatedAt(),
 		}
 
 		if err := tx.Create(&eventModel).Error; err != nil {
@@ -48,7 +48,7 @@ func (r *eventRepository) Update(e event.Event) error {
 			StartTime:   e.StartTime(),
 			EndTime:     e.EndTime(),
 			CreatedAt:   e.CreatedAt(),
-			UpdatedAt:   e.UpdateAt(),
+			UpdatedAt:   e.UpdatedAt(),
 		}
 
 		if err := tx.Save(&eventModel).Error; err != nil {

@@ -14,7 +14,7 @@ type Event interface {
 	StartTime() time.Time
 	EndTime() time.Time
 	CreatedAt() time.Time
-	UpdateAt() time.Time
+	UpdatedAt() time.Time
 	Update(title Title, description Description, startTime, endTime time.Time)
 }
 
@@ -57,7 +57,7 @@ func (e event) CreatedAt() time.Time {
 	return e.createdAt
 }
 
-func (e event) UpdateAt() time.Time {
+func (e event) UpdatedAt() time.Time {
 	return e.updatedAt
 }
 
