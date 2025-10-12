@@ -53,6 +53,53 @@ func TestCreateEvent(t *testing.T) {
 	}
 }
 
+func TestUpdateEvent(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name        string
+		success     bool
+		eventID     string
+		title       string
+		description string
+		startTime   time.Time
+		endTime     time.Time
+		findByIDErr error
+		updateErr   error
+	}{
+		{"success update event", true, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", time.Now(), time.Now(), nil, nil},
+		{"failure empty event id", false, "", "title", "description", time.Now(), time.Now(), nil, nil},
+		{"failure empty title", false, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "", "description", time.Now(), time.Now(), nil, nil},
+		{"failure empty description", false, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "", time.Now(), time.Now(), nil, nil},
+		{"failure find by id error", false, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", time.Now(), time.Now(), errors.New("find by id error"), nil},
+		{"failure update error", false, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", time.Now(), time.Now(), nil, errors.New("update error")},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			mockEvent := mocks.NewMockEvent(ctrl)
+			mockEvent.EXPECT().Update(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return().AnyTimes()
+			mockEventRepository := mocks.NewMockEventRepository(ctrl)
+			mockEventRepository.EXPECT().FindByID(gomock.Any()).Return(mockEvent, tt.findByIDErr).AnyTimes()
+			mockEventRepository.EXPECT().Update(gomock.Any()).Return(tt.updateErr).AnyTimes()
+
+			eventUsecase := NewEventUsecase(mockEventRepository)
+
+			_, err := eventUsecase.UpdateEvent(tt.eventID, tt.title, tt.description, tt.startTime, tt.endTime)
+			if tt.success && err != nil {
+				t.Errorf("expected no error, but got %v", err)
+			}
+			if !tt.success && err == nil {
+				t.Errorf("expected error, but got nil")
+			}
+		})
+	}
+}
+
 func TestListEvents(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
