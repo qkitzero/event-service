@@ -78,7 +78,7 @@ func TestCreate(t *testing.T) {
 			mockEvent.EXPECT().StartTime().Return(time.Now()).AnyTimes()
 			mockEvent.EXPECT().EndTime().Return(time.Now()).AnyTimes()
 			mockEvent.EXPECT().CreatedAt().Return(time.Now()).AnyTimes()
-			mockEvent.EXPECT().UpdateAt().Return(time.Now()).AnyTimes()
+			mockEvent.EXPECT().UpdatedAt().Return(time.Now()).AnyTimes()
 
 			tt.setup(mock, mockEvent)
 
