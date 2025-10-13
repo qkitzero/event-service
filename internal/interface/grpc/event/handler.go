@@ -108,3 +108,11 @@ func (h *EventHandler) ListEvents(ctx context.Context, req *eventv1.ListEventsRe
 		Events: pbEvents,
 	}, nil
 }
+
+func (h *EventHandler) DeleteEvent(ctx context.Context, req *eventv1.DeleteEventRequest) (*eventv1.DeleteEventResponse, error) {
+	if err := h.eventUsecase.DeleteEvent(req.GetId()); err != nil {
+		return nil, err
+	}
+
+	return &eventv1.DeleteEventResponse{}, nil
+}

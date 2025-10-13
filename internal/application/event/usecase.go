@@ -12,6 +12,7 @@ type EventUsecase interface {
 	UpdateEvent(eventIDStr, titleStr, descriptionStr string, startTime, endTime time.Time) (event.Event, error)
 	GetEvent(eventIDStr string) (event.Event, error)
 	ListEvents(userIDStr string) ([]event.Event, error)
+	DeleteEvent(eventIDStr string) error
 }
 
 type eventUsecase struct {
@@ -103,4 +104,17 @@ func (s *eventUsecase) ListEvents(userIDStr string) ([]event.Event, error) {
 	}
 
 	return events, nil
+}
+
+func (s *eventUsecase) DeleteEvent(eventIDStr string) error {
+	eventID, err := event.NewEventIDFromString(eventIDStr)
+	if err != nil {
+		return err
+	}
+
+	if err := s.repo.Delete(eventID); err != nil {
+		return err
+	}
+
+	return nil
 }

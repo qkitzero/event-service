@@ -106,3 +106,12 @@ func (r *eventRepository) ListByUserID(userID user.UserID) ([]event.Event, error
 
 	return events, nil
 }
+
+func (r *eventRepository) Delete(id event.EventID) error {
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Delete(&EventModel{}, "id = ?", id).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+}
