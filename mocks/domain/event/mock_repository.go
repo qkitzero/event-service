@@ -55,6 +55,35 @@ func (mr *MockEventRepositoryMockRecorder) Create(event any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockEventRepository)(nil).Create), event)
 }
 
+// Delete mocks base method.
+func (m *MockEventRepository) Delete(id event.EventID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Delete", id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Delete indicates an expected call of Delete.
+func (mr *MockEventRepositoryMockRecorder) Delete(id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockEventRepository)(nil).Delete), id)
+}
+
+// FindByID mocks base method.
+func (m *MockEventRepository) FindByID(id event.EventID) (event.Event, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByID", id)
+	ret0, _ := ret[0].(event.Event)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByID indicates an expected call of FindByID.
+func (mr *MockEventRepositoryMockRecorder) FindByID(id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockEventRepository)(nil).FindByID), id)
+}
+
 // ListByUserID mocks base method.
 func (m *MockEventRepository) ListByUserID(userID user.UserID) ([]event.Event, error) {
 	m.ctrl.T.Helper()
@@ -68,4 +97,18 @@ func (m *MockEventRepository) ListByUserID(userID user.UserID) ([]event.Event, e
 func (mr *MockEventRepositoryMockRecorder) ListByUserID(userID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByUserID", reflect.TypeOf((*MockEventRepository)(nil).ListByUserID), userID)
+}
+
+// Update mocks base method.
+func (m *MockEventRepository) Update(event event.Event) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Update", event)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Update indicates an expected call of Update.
+func (mr *MockEventRepositoryMockRecorder) Update(event any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockEventRepository)(nil).Update), event)
 }

@@ -16,7 +16,27 @@
     "application/json"
   ],
   "paths": {
-    "/v1/event": {
+    "/v1/events": {
+      "get": {
+        "operationId": "EventService_ListEvents",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListEventsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "EventService"
+        ]
+      },
       "post": {
         "operationId": "EventService_CreateEvent",
         "responses": {
@@ -48,14 +68,14 @@
         ]
       }
     },
-    "/v1/events": {
-      "get": {
-        "operationId": "EventService_ListEvents",
+    "/v1/events/{event.id}": {
+      "put": {
+        "operationId": "EventService_UpdateEvent",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ListEventsResponse"
+              "$ref": "#/definitions/v1UpdateEventResponse"
             }
           },
           "default": {
@@ -65,6 +85,80 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "event.id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EventServiceUpdateEventBody"
+            }
+          }
+        ],
+        "tags": [
+          "EventService"
+        ]
+      }
+    },
+    "/v1/events/{id}": {
+      "get": {
+        "operationId": "EventService_GetEvent",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetEventResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "EventService"
+        ]
+      },
+      "delete": {
+        "operationId": "EventService_DeleteEvent",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteEventResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "tags": [
           "EventService"
         ]
@@ -72,6 +166,30 @@
     }
   },
   "definitions": {
+    "EventServiceUpdateEventBody": {
+      "type": "object",
+      "properties": {
+        "event": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "startTime": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "endTime": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        }
+      }
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -122,10 +240,13 @@
     "v1CreateEventResponse": {
       "type": "object",
       "properties": {
-        "eventId": {
-          "type": "string"
+        "event": {
+          "$ref": "#/definitions/v1Event"
         }
       }
+    },
+    "v1DeleteEventResponse": {
+      "type": "object"
     },
     "v1Event": {
       "type": "object",
@@ -149,6 +270,14 @@
         }
       }
     },
+    "v1GetEventResponse": {
+      "type": "object",
+      "properties": {
+        "event": {
+          "$ref": "#/definitions/v1Event"
+        }
+      }
+    },
     "v1ListEventsResponse": {
       "type": "object",
       "properties": {
@@ -158,6 +287,14 @@
             "type": "object",
             "$ref": "#/definitions/v1Event"
           }
+        }
+      }
+    },
+    "v1UpdateEventResponse": {
+      "type": "object",
+      "properties": {
+        "event": {
+          "$ref": "#/definitions/v1Event"
         }
       }
     }

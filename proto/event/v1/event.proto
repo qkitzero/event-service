@@ -10,12 +10,24 @@ option go_package = "github.com/qkitzero/event-service/gen/go/event/v1";
 service EventService {
   rpc CreateEvent(CreateEventRequest) returns (CreateEventResponse) {
     option (google.api.http) = {
-      post: "/v1/event"
+      post: "/v1/events"
       body: "*"
     };
   }
+  rpc UpdateEvent(UpdateEventRequest) returns (UpdateEventResponse) {
+    option (google.api.http) = {
+      put: "/v1/events/{event.id}"
+      body: "*"
+    };
+  }
+  rpc GetEvent(GetEventRequest) returns (GetEventResponse) {
+    option (google.api.http) = {get: "/v1/events/{id}"};
+  }
   rpc ListEvents(ListEventsRequest) returns (ListEventsResponse) {
     option (google.api.http) = {get: "/v1/events"};
+  }
+  rpc DeleteEvent(DeleteEventRequest) returns (DeleteEventResponse) {
+    option (google.api.http) = {delete: "/v1/events/{id}"};
   }
 }
 
@@ -35,7 +47,23 @@ message CreateEventRequest {
 }
 
 message CreateEventResponse {
-  string event_id = 1;
+  Event event = 1;
+}
+
+message UpdateEventRequest {
+  Event event = 1;
+}
+
+message UpdateEventResponse {
+  Event event = 1;
+}
+
+message GetEventRequest {
+  string id = 1;
+}
+
+message GetEventResponse {
+  Event event = 1;
 }
 
 message ListEventsRequest {}
@@ -43,3 +71,9 @@ message ListEventsRequest {}
 message ListEventsResponse {
   repeated Event events = 1;
 }
+
+message DeleteEventRequest {
+  string id = 1;
+}
+
+message DeleteEventResponse {}

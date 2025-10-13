@@ -14,6 +14,8 @@ type Event interface {
 	StartTime() time.Time
 	EndTime() time.Time
 	CreatedAt() time.Time
+	UpdatedAt() time.Time
+	Update(title Title, description Description, startTime, endTime time.Time)
 }
 
 type event struct {
@@ -24,6 +26,7 @@ type event struct {
 	startTime   time.Time
 	endTime     time.Time
 	createdAt   time.Time
+	updatedAt   time.Time
 }
 
 func (e event) ID() EventID {
@@ -54,6 +57,18 @@ func (e event) CreatedAt() time.Time {
 	return e.createdAt
 }
 
+func (e event) UpdatedAt() time.Time {
+	return e.updatedAt
+}
+
+func (e *event) Update(title Title, description Description, startTime, endTime time.Time) {
+	e.title = title
+	e.description = description
+	e.startTime = startTime
+	e.endTime = endTime
+	e.updatedAt = time.Now()
+}
+
 func NewEvent(
 	id EventID,
 	userID user.UserID,
@@ -62,6 +77,7 @@ func NewEvent(
 	startTime time.Time,
 	endTime time.Time,
 	createdAt time.Time,
+	updatedAt time.Time,
 ) Event {
 	return &event{
 		id:          id,
@@ -71,5 +87,6 @@ func NewEvent(
 		startTime:   startTime,
 		endTime:     endTime,
 		createdAt:   createdAt,
+		updatedAt:   updatedAt,
 	}
 }

@@ -37,7 +37,47 @@ func (h *EventHandler) CreateEvent(ctx context.Context, req *eventv1.CreateEvent
 	}
 
 	return &eventv1.CreateEventResponse{
-		EventId: event.ID().String(),
+		Event: &eventv1.Event{
+			Id:          event.ID().String(),
+			Title:       event.Title().String(),
+			Description: event.Description().String(),
+			StartTime:   timestamppb.New(event.StartTime()),
+			EndTime:     timestamppb.New(event.EndTime()),
+		},
+	}, nil
+}
+
+func (h *EventHandler) UpdateEvent(ctx context.Context, req *eventv1.UpdateEventRequest) (*eventv1.UpdateEventResponse, error) {
+	event, err := h.eventUsecase.UpdateEvent(req.GetEvent().GetId(), req.GetEvent().GetTitle(), req.GetEvent().GetDescription(), req.GetEvent().GetStartTime().AsTime(), req.GetEvent().GetEndTime().AsTime())
+	if err != nil {
+		return nil, err
+	}
+
+	return &eventv1.UpdateEventResponse{
+		Event: &eventv1.Event{
+			Id:          event.ID().String(),
+			Title:       event.Title().String(),
+			Description: event.Description().String(),
+			StartTime:   timestamppb.New(event.StartTime()),
+			EndTime:     timestamppb.New(event.EndTime()),
+		},
+	}, nil
+}
+
+func (h *EventHandler) GetEvent(ctx context.Context, req *eventv1.GetEventRequest) (*eventv1.GetEventResponse, error) {
+	event, err := h.eventUsecase.GetEvent(req.GetId())
+	if err != nil {
+		return nil, err
+	}
+
+	return &eventv1.GetEventResponse{
+		Event: &eventv1.Event{
+			Id:          event.ID().String(),
+			Title:       event.Title().String(),
+			Description: event.Description().String(),
+			StartTime:   timestamppb.New(event.StartTime()),
+			EndTime:     timestamppb.New(event.EndTime()),
+		},
 	}, nil
 }
 
@@ -67,4 +107,12 @@ func (h *EventHandler) ListEvents(ctx context.Context, req *eventv1.ListEventsRe
 	return &eventv1.ListEventsResponse{
 		Events: pbEvents,
 	}, nil
+}
+
+func (h *EventHandler) DeleteEvent(ctx context.Context, req *eventv1.DeleteEventRequest) (*eventv1.DeleteEventResponse, error) {
+	if err := h.eventUsecase.DeleteEvent(req.GetId()); err != nil {
+		return nil, err
+	}
+
+	return &eventv1.DeleteEventResponse{}, nil
 }

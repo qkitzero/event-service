@@ -9,7 +9,10 @@ import (
 
 type EventUsecase interface {
 	CreateEvent(userIDStr, titleStr, descriptionStr string, startTime, endTime time.Time) (event.Event, error)
+	UpdateEvent(eventIDStr, titleStr, descriptionStr string, startTime, endTime time.Time) (event.Event, error)
+	GetEvent(eventIDStr string) (event.Event, error)
 	ListEvents(userIDStr string) ([]event.Event, error)
+	DeleteEvent(eventIDStr string) error
 }
 
 type eventUsecase struct {
@@ -36,9 +39,53 @@ func (s *eventUsecase) CreateEvent(userIDStr, titleStr, descriptionStr string, s
 		return nil, err
 	}
 
-	e := event.NewEvent(event.NewEventID(), userID, title, description, startTime, endTime, time.Now())
+	e := event.NewEvent(event.NewEventID(), userID, title, description, startTime, endTime, time.Now(), time.Now())
 
 	if err := s.repo.Create(e); err != nil {
+		return nil, err
+	}
+
+	return e, nil
+}
+
+func (s *eventUsecase) UpdateEvent(eventIDStr, titleStr, descriptionStr string, startTime, endTime time.Time) (event.Event, error) {
+	eventID, err := event.NewEventIDFromString(eventIDStr)
+	if err != nil {
+		return nil, err
+	}
+
+	e, err := s.repo.FindByID(eventID)
+	if err != nil {
+		return nil, err
+	}
+
+	title, err := event.NewTitle(titleStr)
+	if err != nil {
+		return nil, err
+	}
+
+	description, err := event.NewDescription(descriptionStr)
+	if err != nil {
+		return nil, err
+	}
+
+	e.Update(title, description, startTime, endTime)
+
+	if err := s.repo.Update(e); err != nil {
+		return nil, err
+	}
+
+	return e, nil
+}
+
+func (s *eventUsecase) GetEvent(eventIDStr string) (event.Event, error) {
+	eventID, err := event.NewEventIDFromString(eventIDStr)
+	if err != nil {
+		return nil, err
+	}
+
+	e, err := s.repo.FindByID(eventID)
+	if err != nil {
 		return nil, err
 	}
 
@@ -57,4 +104,17 @@ func (s *eventUsecase) ListEvents(userIDStr string) ([]event.Event, error) {
 	}
 
 	return events, nil
+}
+
+func (s *eventUsecase) DeleteEvent(eventIDStr string) error {
+	eventID, err := event.NewEventIDFromString(eventIDStr)
+	if err != nil {
+		return err
+	}
+
+	if err := s.repo.Delete(eventID); err != nil {
+		return err
+	}
+
+	return nil
 }
