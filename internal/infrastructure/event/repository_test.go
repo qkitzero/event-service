@@ -325,3 +325,77 @@ func TestListByUserID(t *testing.T) {
 		})
 	}
 }
+
+func TestDelete(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name    string
+		success bool
+		id      event.EventID
+		setup   func(mock sqlmock.Sqlmock, id event.EventID)
+	}{
+		{
+			name:    "success delete event",
+			success: true,
+			id:      event.EventID{UUID: uuid.New()},
+			setup: func(mock sqlmock.Sqlmock, id event.EventID) {
+				mock.ExpectBegin()
+
+				mock.ExpectExec(regexp.QuoteMeta(`DELETE FROM "events" WHERE id = $1`)).
+					WithArgs(id).
+					WillReturnResult(sqlmock.NewResult(1, 1))
+
+				mock.ExpectCommit()
+			},
+		},
+		{
+			name:    "failure delete event error",
+			success: false,
+			id:      event.EventID{UUID: uuid.New()},
+			setup: func(mock sqlmock.Sqlmock, id event.EventID) {
+				mock.ExpectBegin()
+
+				mock.ExpectExec(regexp.QuoteMeta(`DELETE FROM "events" WHERE id = $1`)).
+					WithArgs(id).
+					WillReturnError(errors.New("delete event error"))
+
+				mock.ExpectRollback()
+			},
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			sqlDB, mock, err := sqlmock.New()
+			if err != nil {
+				t.Errorf("failed to new sqlmock: %s", err)
+			}
+
+			gormDB, err := gorm.Open(postgres.New(postgres.Config{Conn: sqlDB}), &gorm.Config{})
+			if err != nil {
+				t.Errorf("failed to open gorm: %s", err)
+			}
+
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			tt.setup(mock, tt.id)
+
+			repo := NewEventRepository(gormDB)
+
+			err = repo.Delete(tt.id)
+			if tt.success && err != nil {
+				t.Errorf("expected no error, but got %v", err)
+			}
+			if !tt.success && err == nil {
+				t.Errorf("expected error, but got nil")
+			}
+
+			if err := mock.ExpectationsWereMet(); err != nil {
+				t.Errorf("there were unfulfilled expectations: %s", err)
+			}
+		})
+	}
+}
