@@ -37,7 +37,13 @@ func (h *EventHandler) CreateEvent(ctx context.Context, req *eventv1.CreateEvent
 	}
 
 	return &eventv1.CreateEventResponse{
-		EventId: event.ID().String(),
+		Event: &eventv1.Event{
+			Id:          event.ID().String(),
+			Title:       event.Title().String(),
+			Description: event.Description().String(),
+			StartTime:   timestamppb.New(event.StartTime()),
+			EndTime:     timestamppb.New(event.EndTime()),
+		},
 	}, nil
 }
 
