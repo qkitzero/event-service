@@ -10,6 +10,7 @@ import (
 type EventUsecase interface {
 	CreateEvent(userIDStr, titleStr, descriptionStr string, startTime, endTime time.Time) (event.Event, error)
 	UpdateEvent(eventIDStr, titleStr, descriptionStr string, startTime, endTime time.Time) (event.Event, error)
+	GetEvent(eventIDStr string) (event.Event, error)
 	ListEvents(userIDStr string) ([]event.Event, error)
 }
 
@@ -70,6 +71,20 @@ func (s *eventUsecase) UpdateEvent(eventIDStr, titleStr, descriptionStr string, 
 	e.Update(title, description, startTime, endTime)
 
 	if err := s.repo.Update(e); err != nil {
+		return nil, err
+	}
+
+	return e, nil
+}
+
+func (s *eventUsecase) GetEvent(eventIDStr string) (event.Event, error) {
+	eventID, err := event.NewEventIDFromString(eventIDStr)
+	if err != nil {
+		return nil, err
+	}
+
+	e, err := s.repo.FindByID(eventID)
+	if err != nil {
 		return nil, err
 	}
 

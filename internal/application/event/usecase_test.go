@@ -100,6 +100,43 @@ func TestUpdateEvent(t *testing.T) {
 	}
 }
 
+func TestGetEvent(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name        string
+		success     bool
+		eventID     string
+		findByIDErr error
+	}{
+		{"success get event", true, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil},
+		{"failure empty event id", false, "", nil},
+		{"failure find by id error", false, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", errors.New("find by id error")},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			mockEvent := mocks.NewMockEvent(ctrl)
+			mockEventRepository := mocks.NewMockEventRepository(ctrl)
+			mockEventRepository.EXPECT().FindByID(gomock.Any()).Return(mockEvent, tt.findByIDErr).AnyTimes()
+
+			eventUsecase := NewEventUsecase(mockEventRepository)
+
+			_, err := eventUsecase.GetEvent(tt.eventID)
+			if tt.success && err != nil {
+				t.Errorf("expected no error, but got %v", err)
+			}
+			if !tt.success && err == nil {
+				t.Errorf("expected error, but got nil")
+			}
+		})
+	}
+}
+
 func TestListEvents(t *testing.T) {
 	t.Parallel()
 	tests := []struct {

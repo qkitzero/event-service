@@ -129,6 +129,53 @@ func TestUpdateEvent(t *testing.T) {
 	}
 }
 
+func TestGetEvent(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name        string
+		success     bool
+		ctx         context.Context
+		id          string
+		getEventErr error
+	}{
+		{"success get event", true, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil},
+		{"failure get event error", false, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", fmt.Errorf("get event error")},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			mockUserUsecase := mocksappuser.NewMockUserUsecase(ctrl)
+			mockEventUsecase := mocksappevent.NewMockEventUsecase(ctrl)
+			mockEvent := mocksevent.NewMockEvent(ctrl)
+			mockEventUsecase.EXPECT().GetEvent(tt.id).Return(mockEvent, tt.getEventErr).AnyTimes()
+			mockEvent.EXPECT().ID().Return(event.NewEventID()).AnyTimes()
+			mockEvent.EXPECT().Title().Return(event.Title("title")).AnyTimes()
+			mockEvent.EXPECT().Description().Return(event.Description("description")).AnyTimes()
+			mockEvent.EXPECT().StartTime().Return(time.Now()).AnyTimes()
+			mockEvent.EXPECT().EndTime().Return(time.Now()).AnyTimes()
+
+			eventHandler := NewEventHandler(mockUserUsecase, mockEventUsecase)
+
+			req := &eventv1.GetEventRequest{
+				Id: tt.id,
+			}
+
+			_, err := eventHandler.GetEvent(tt.ctx, req)
+			if tt.success && err != nil {
+				t.Errorf("expected no error, but got %v", err)
+			}
+			if !tt.success && err == nil {
+				t.Errorf("expected error, but got nil")
+			}
+		})
+	}
+}
+
 func TestListEvents(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
