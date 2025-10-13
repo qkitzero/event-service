@@ -41,7 +41,7 @@ message CreateEventRequest {
 }
 
 message CreateEventResponse {
-  string event_id = 1;
+  Event event = 1;
 }
 
 message UpdateEventRequest {

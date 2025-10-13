@@ -152,8 +152,8 @@
     "v1CreateEventResponse": {
       "type": "object",
       "properties": {
-        "eventId": {
-          "type": "string"
+        "event": {
+          "$ref": "#/definitions/v1Event"
         }
       }
     },

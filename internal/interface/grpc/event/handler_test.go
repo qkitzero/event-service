@@ -48,6 +48,10 @@ func TestCreateEvent(t *testing.T) {
 			mockUserUsecase.EXPECT().GetUser(tt.ctx).Return(mockUserID, tt.getUserErr).AnyTimes()
 			mockEventUsecase.EXPECT().CreateEvent(mockUserID, tt.title, tt.description, tt.startTime.AsTime(), tt.endTime.AsTime()).Return(mockEvent, tt.createEventErr).AnyTimes()
 			mockEvent.EXPECT().ID().Return(event.NewEventID()).AnyTimes()
+			mockEvent.EXPECT().Title().Return(event.Title(tt.title)).AnyTimes()
+			mockEvent.EXPECT().Description().Return(event.Description(tt.description)).AnyTimes()
+			mockEvent.EXPECT().StartTime().Return(tt.startTime.AsTime()).AnyTimes()
+			mockEvent.EXPECT().EndTime().Return(tt.endTime.AsTime()).AnyTimes()
 
 			eventHandler := NewEventHandler(mockUserUsecase, mockEventUsecase)
 
