@@ -26,6 +26,9 @@ service EventService {
   rpc ListEvents(ListEventsRequest) returns (ListEventsResponse) {
     option (google.api.http) = {get: "/v1/events"};
   }
+  rpc DeleteEvent(DeleteEventRequest) returns (DeleteEventResponse) {
+    option (google.api.http) = {delete: "/v1/events/{id}"};
+  }
 }
 
 message Event {
@@ -68,3 +71,9 @@ message ListEventsRequest {}
 message ListEventsResponse {
   repeated Event events = 1;
 }
+
+message DeleteEventRequest {
+  string id = 1;
+}
+
+message DeleteEventResponse {}

@@ -56,6 +56,20 @@ func (mr *MockEventUsecaseMockRecorder) CreateEvent(userIDStr, titleStr, descrip
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEvent", reflect.TypeOf((*MockEventUsecase)(nil).CreateEvent), userIDStr, titleStr, descriptionStr, startTime, endTime)
 }
 
+// DeleteEvent mocks base method.
+func (m *MockEventUsecase) DeleteEvent(eventIDStr string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteEvent", eventIDStr)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteEvent indicates an expected call of DeleteEvent.
+func (mr *MockEventUsecaseMockRecorder) DeleteEvent(eventIDStr any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteEvent", reflect.TypeOf((*MockEventUsecase)(nil).DeleteEvent), eventIDStr)
+}
+
 // GetEvent mocks base method.
 func (m *MockEventUsecase) GetEvent(eventIDStr string) (event.Event, error) {
 	m.ctrl.T.Helper()

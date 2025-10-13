@@ -134,6 +134,34 @@
         "tags": [
           "EventService"
         ]
+      },
+      "delete": {
+        "operationId": "EventService_DeleteEvent",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteEventResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "EventService"
+        ]
       }
     }
   },
@@ -216,6 +244,9 @@
           "$ref": "#/definitions/v1Event"
         }
       }
+    },
+    "v1DeleteEventResponse": {
+      "type": "object"
     },
     "v1Event": {
       "type": "object",
