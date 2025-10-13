@@ -23,6 +23,7 @@ const (
 	EventService_UpdateEvent_FullMethodName = "/event.v1.EventService/UpdateEvent"
 	EventService_GetEvent_FullMethodName    = "/event.v1.EventService/GetEvent"
 	EventService_ListEvents_FullMethodName  = "/event.v1.EventService/ListEvents"
+	EventService_DeleteEvent_FullMethodName = "/event.v1.EventService/DeleteEvent"
 )
 
 // EventServiceClient is the client API for EventService service.
@@ -33,6 +34,7 @@ type EventServiceClient interface {
 	UpdateEvent(ctx context.Context, in *UpdateEventRequest, opts ...grpc.CallOption) (*UpdateEventResponse, error)
 	GetEvent(ctx context.Context, in *GetEventRequest, opts ...grpc.CallOption) (*GetEventResponse, error)
 	ListEvents(ctx context.Context, in *ListEventsRequest, opts ...grpc.CallOption) (*ListEventsResponse, error)
+	DeleteEvent(ctx context.Context, in *DeleteEventRequest, opts ...grpc.CallOption) (*DeleteEventResponse, error)
 }
 
 type eventServiceClient struct {
@@ -83,6 +85,16 @@ func (c *eventServiceClient) ListEvents(ctx context.Context, in *ListEventsReque
 	return out, nil
 }
 
+func (c *eventServiceClient) DeleteEvent(ctx context.Context, in *DeleteEventRequest, opts ...grpc.CallOption) (*DeleteEventResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteEventResponse)
+	err := c.cc.Invoke(ctx, EventService_DeleteEvent_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EventServiceServer is the server API for EventService service.
 // All implementations must embed UnimplementedEventServiceServer
 // for forward compatibility.
@@ -91,6 +103,7 @@ type EventServiceServer interface {
 	UpdateEvent(context.Context, *UpdateEventRequest) (*UpdateEventResponse, error)
 	GetEvent(context.Context, *GetEventRequest) (*GetEventResponse, error)
 	ListEvents(context.Context, *ListEventsRequest) (*ListEventsResponse, error)
+	DeleteEvent(context.Context, *DeleteEventRequest) (*DeleteEventResponse, error)
 	mustEmbedUnimplementedEventServiceServer()
 }
 
@@ -112,6 +125,9 @@ func (UnimplementedEventServiceServer) GetEvent(context.Context, *GetEventReques
 }
 func (UnimplementedEventServiceServer) ListEvents(context.Context, *ListEventsRequest) (*ListEventsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListEvents not implemented")
+}
+func (UnimplementedEventServiceServer) DeleteEvent(context.Context, *DeleteEventRequest) (*DeleteEventResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteEvent not implemented")
 }
 func (UnimplementedEventServiceServer) mustEmbedUnimplementedEventServiceServer() {}
 func (UnimplementedEventServiceServer) testEmbeddedByValue()                      {}
@@ -206,6 +222,24 @@ func _EventService_ListEvents_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EventService_DeleteEvent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteEventRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EventServiceServer).DeleteEvent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EventService_DeleteEvent_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EventServiceServer).DeleteEvent(ctx, req.(*DeleteEventRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // EventService_ServiceDesc is the grpc.ServiceDesc for EventService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -228,6 +262,10 @@ var EventService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListEvents",
 			Handler:    _EventService_ListEvents_Handler,
+		},
+		{
+			MethodName: "DeleteEvent",
+			Handler:    _EventService_DeleteEvent_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
