@@ -11,15 +11,16 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 
+	authv1 "github.com/qkitzero/auth-service/gen/go/auth/v1"
 	eventv1 "github.com/qkitzero/event-service/gen/go/event/v1"
 	appevent "github.com/qkitzero/event-service/internal/application/event"
-	userv1 "github.com/qkitzero/user-service/gen/go/user/v1"
-
+	apiauth "github.com/qkitzero/event-service/internal/infrastructure/api/auth"
 	apiuser "github.com/qkitzero/event-service/internal/infrastructure/api/user"
 	"github.com/qkitzero/event-service/internal/infrastructure/db"
 	infraevent "github.com/qkitzero/event-service/internal/infrastructure/event"
 	grpcevent "github.com/qkitzero/event-service/internal/interface/grpc/event"
 	"github.com/qkitzero/event-service/util"
+	userv1 "github.com/qkitzero/user-service/gen/go/user/v1"
 )
 
 func main() {
@@ -40,6 +41,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+	authTarget := util.GetEnv("AUTH_SERVICE_HOST", "") + ":" + util.GetEnv("AUTH_SERVICE_PORT", "")
 	userTarget := util.GetEnv("USER_SERVICE_HOST", "") + ":" + util.GetEnv("USER_SERVICE_PORT", "")
 
 	var opts grpc.DialOption
@@ -50,22 +52,30 @@ func main() {
 		opts = grpc.WithTransportCredentials(insecure.NewCredentials())
 	}
 
-	conn, err := grpc.NewClient(userTarget, opts)
+	authConn, err := grpc.NewClient(authTarget, opts)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer conn.Close()
+	defer authConn.Close()
+
+	userConn, err := grpc.NewClient(userTarget, opts)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer userConn.Close()
 
 	server := grpc.NewServer()
 
-	userServiceClient := userv1.NewUserServiceClient(conn)
+	authServiceClient := authv1.NewAuthServiceClient(authConn)
+	userServiceClient := userv1.NewUserServiceClient(userConn)
 	eventRepository := infraevent.NewEventRepository(db)
 
+	authUsecase := apiauth.NewAuthUsecase(authServiceClient)
 	userUsecase := apiuser.NewUserUsecase(userServiceClient)
 	eventUsecase := appevent.NewEventUsecase(eventRepository)
 
 	healthServer := health.NewServer()
-	eventHandler := grpcevent.NewEventHandler(userUsecase, eventUsecase)
+	eventHandler := grpcevent.NewEventHandler(authUsecase, userUsecase, eventUsecase)
 
 	grpc_health_v1.RegisterHealthServer(server, healthServer)
 	eventv1.RegisterEventServiceServer(server, eventHandler)

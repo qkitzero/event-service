@@ -11,6 +11,7 @@ import (
 
 	eventv1 "github.com/qkitzero/event-service/gen/go/event/v1"
 	"github.com/qkitzero/event-service/internal/domain/event"
+	mocksappauth "github.com/qkitzero/event-service/mocks/application/auth"
 	mocksappevent "github.com/qkitzero/event-service/mocks/application/event"
 	mocksappuser "github.com/qkitzero/event-service/mocks/application/user"
 	mocksevent "github.com/qkitzero/event-service/mocks/domain/event"
@@ -41,6 +42,7 @@ func TestCreateEvent(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
+			mockAuthUsecase := mocksappauth.NewMockAuthUsecase(ctrl)
 			mockUserUsecase := mocksappuser.NewMockUserUsecase(ctrl)
 			mockEventUsecase := mocksappevent.NewMockEventUsecase(ctrl)
 			mockEvent := mocksevent.NewMockEvent(ctrl)
@@ -53,7 +55,7 @@ func TestCreateEvent(t *testing.T) {
 			mockEvent.EXPECT().StartTime().Return(tt.startTime.AsTime()).AnyTimes()
 			mockEvent.EXPECT().EndTime().Return(tt.endTime.AsTime()).AnyTimes()
 
-			eventHandler := NewEventHandler(mockUserUsecase, mockEventUsecase)
+			eventHandler := NewEventHandler(mockAuthUsecase, mockUserUsecase, mockEventUsecase)
 
 			req := &eventv1.CreateEventRequest{
 				Title:       tt.title,
@@ -83,10 +85,12 @@ func TestUpdateEvent(t *testing.T) {
 		description    string
 		startTime      *timestamppb.Timestamp
 		endTime        *timestamppb.Timestamp
+		verifyTokenErr error
 		updateEventErr error
 	}{
-		{"success update event", true, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), nil},
-		{"failure update event error", false, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), fmt.Errorf("update event error")},
+		{"success update event", true, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), nil, nil},
+		{"failure verify token error", false, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), fmt.Errorf("verify token error"), nil},
+		{"failure update event error", false, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), nil, fmt.Errorf("update event error")},
 	}
 	for _, tt := range tests {
 		tt := tt
@@ -96,9 +100,11 @@ func TestUpdateEvent(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
+			mockAuthUsecase := mocksappauth.NewMockAuthUsecase(ctrl)
 			mockUserUsecase := mocksappuser.NewMockUserUsecase(ctrl)
 			mockEventUsecase := mocksappevent.NewMockEventUsecase(ctrl)
 			mockEvent := mocksevent.NewMockEvent(ctrl)
+			mockAuthUsecase.EXPECT().VerifyToken(tt.ctx).Return("user id", tt.verifyTokenErr).AnyTimes()
 			mockEventUsecase.EXPECT().UpdateEvent(tt.id, tt.title, tt.description, tt.startTime.AsTime(), tt.endTime.AsTime()).Return(mockEvent, tt.updateEventErr).AnyTimes()
 			mockEvent.EXPECT().ID().Return(event.NewEventID()).AnyTimes()
 			mockEvent.EXPECT().Title().Return(event.Title(tt.title)).AnyTimes()
@@ -106,7 +112,7 @@ func TestUpdateEvent(t *testing.T) {
 			mockEvent.EXPECT().StartTime().Return(tt.startTime.AsTime()).AnyTimes()
 			mockEvent.EXPECT().EndTime().Return(tt.endTime.AsTime()).AnyTimes()
 
-			eventHandler := NewEventHandler(mockUserUsecase, mockEventUsecase)
+			eventHandler := NewEventHandler(mockAuthUsecase, mockUserUsecase, mockEventUsecase)
 
 			req := &eventv1.UpdateEventRequest{
 				Event: &eventv1.Event{
@@ -132,14 +138,16 @@ func TestUpdateEvent(t *testing.T) {
 func TestGetEvent(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
-		name        string
-		success     bool
-		ctx         context.Context
-		id          string
-		getEventErr error
+		name           string
+		success        bool
+		ctx            context.Context
+		id             string
+		verifyTokenErr error
+		getEventErr    error
 	}{
-		{"success get event", true, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil},
-		{"failure get event error", false, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", fmt.Errorf("get event error")},
+		{"success get event", true, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil, nil},
+		{"failure", false, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", fmt.Errorf("verify token error"), nil},
+		{"failure get event error", false, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil, fmt.Errorf("get event error")},
 	}
 	for _, tt := range tests {
 		tt := tt
@@ -149,9 +157,11 @@ func TestGetEvent(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
+			mockAuthUsecase := mocksappauth.NewMockAuthUsecase(ctrl)
 			mockUserUsecase := mocksappuser.NewMockUserUsecase(ctrl)
 			mockEventUsecase := mocksappevent.NewMockEventUsecase(ctrl)
 			mockEvent := mocksevent.NewMockEvent(ctrl)
+			mockAuthUsecase.EXPECT().VerifyToken(tt.ctx).Return("user id", tt.verifyTokenErr).AnyTimes()
 			mockEventUsecase.EXPECT().GetEvent(tt.id).Return(mockEvent, tt.getEventErr).AnyTimes()
 			mockEvent.EXPECT().ID().Return(event.NewEventID()).AnyTimes()
 			mockEvent.EXPECT().Title().Return(event.Title("title")).AnyTimes()
@@ -159,7 +169,7 @@ func TestGetEvent(t *testing.T) {
 			mockEvent.EXPECT().StartTime().Return(time.Now()).AnyTimes()
 			mockEvent.EXPECT().EndTime().Return(time.Now()).AnyTimes()
 
-			eventHandler := NewEventHandler(mockUserUsecase, mockEventUsecase)
+			eventHandler := NewEventHandler(mockAuthUsecase, mockUserUsecase, mockEventUsecase)
 
 			req := &eventv1.GetEventRequest{
 				Id: tt.id,
@@ -197,6 +207,7 @@ func TestListEvents(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
+			mockAuthUsecase := mocksappauth.NewMockAuthUsecase(ctrl)
 			mockUserUsecase := mocksappuser.NewMockUserUsecase(ctrl)
 			mockEventUsecase := mocksappevent.NewMockEventUsecase(ctrl)
 			mockEvent := mocksevent.NewMockEvent(ctrl)
@@ -209,7 +220,7 @@ func TestListEvents(t *testing.T) {
 			mockEvent.EXPECT().StartTime().Return(time.Now()).AnyTimes()
 			mockEvent.EXPECT().EndTime().Return(time.Now()).AnyTimes()
 
-			eventHandler := NewEventHandler(mockUserUsecase, mockEventUsecase)
+			eventHandler := NewEventHandler(mockAuthUsecase, mockUserUsecase, mockEventUsecase)
 
 			req := &eventv1.ListEventsRequest{}
 
@@ -231,10 +242,12 @@ func TestDeleteEvent(t *testing.T) {
 		success        bool
 		ctx            context.Context
 		id             string
+		verifyTokenErr error
 		deleteEventErr error
 	}{
-		{"success delete event", true, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil},
-		{"failure delete event error", false, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", fmt.Errorf("delete event error")},
+		{"success delete event", true, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil, nil},
+		{"failure verify token error", false, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", fmt.Errorf("verify token error"), nil},
+		{"failure delete event error", false, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil, fmt.Errorf("delete event error")},
 	}
 	for _, tt := range tests {
 		tt := tt
@@ -244,11 +257,13 @@ func TestDeleteEvent(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
+			mockAuthUsecase := mocksappauth.NewMockAuthUsecase(ctrl)
 			mockUserUsecase := mocksappuser.NewMockUserUsecase(ctrl)
 			mockEventUsecase := mocksappevent.NewMockEventUsecase(ctrl)
+			mockAuthUsecase.EXPECT().VerifyToken(tt.ctx).Return("user id", tt.verifyTokenErr).AnyTimes()
 			mockEventUsecase.EXPECT().DeleteEvent(tt.id).Return(tt.deleteEventErr).AnyTimes()
 
-			eventHandler := NewEventHandler(mockUserUsecase, mockEventUsecase)
+			eventHandler := NewEventHandler(mockAuthUsecase, mockUserUsecase, mockEventUsecase)
 
 			req := &eventv1.DeleteEventRequest{
 				Id: tt.id,
