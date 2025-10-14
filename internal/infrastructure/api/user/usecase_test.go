@@ -23,7 +23,7 @@ func TestGetUser(t *testing.T) {
 		getUserErr error
 	}{
 		{
-			name:       "success create user",
+			name:       "success get user",
 			success:    true,
 			ctx:        metadata.NewIncomingContext(context.Background(), metadata.Pairs("authorization", "Bearer "+accessToken)),
 			getUserErr: nil,
