@@ -52,7 +52,7 @@ steps:
     args:
       - "-c"
       - |
-        gcloud secrets versions access latest --secret=event-service-gateway-env-file > .env
+        gcloud secrets versions access latest --secret=event-service-env-file > .env
         gcloud run deploy event-service-gateway \
           --image=us-central1-docker.pkg.dev/$PROJECT_ID/event-service-gateway/$COMMIT_SHA \
           --region=us-central1 \
