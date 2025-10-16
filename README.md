@@ -1,7 +1,8 @@
 # Event Service
 
-[![Go Test](https://github.com/qkitzero/event-service/actions/workflows/test.yml/badge.svg)](https://github.com/qkitzero/event-service/actions/workflows/test.yml)
-[![codecov](https://codecov.io/gh/qkitzero/event-service/graph/badge.svg?token=hoFlz6L4aQ)](https://codecov.io/gh/qkitzero/event-service)
+[![release](https://img.shields.io/github/v/release/qkitzero/event-service?logo=github)](https://github.com/qkitzero/event-service/releases)
+[![test](https://github.com/qkitzero/event-service/actions/workflows/test.yml/badge.svg)](https://github.com/qkitzero/event-service/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/qkitzero/event-service/graph/badge.svg)](https://codecov.io/gh/qkitzero/event-service)
 [![Buf CI](https://github.com/qkitzero/event-service/actions/workflows/buf-ci.yaml/badge.svg)](https://github.com/qkitzero/event-service/actions/workflows/buf-ci.yaml)
 
 - Microservices Architecture
