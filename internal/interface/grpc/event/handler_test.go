@@ -105,7 +105,7 @@ func TestUpdateEvent(t *testing.T) {
 			mockEventUsecase := mocksappevent.NewMockEventUsecase(ctrl)
 			mockEvent := mocksevent.NewMockEvent(ctrl)
 			mockAuthUsecase.EXPECT().VerifyToken(tt.ctx).Return("user id", tt.verifyTokenErr).AnyTimes()
-			mockEventUsecase.EXPECT().UpdateEvent(tt.id, tt.title, tt.description, tt.startTime.AsTime(), tt.endTime.AsTime()).Return(mockEvent, tt.updateEventErr).AnyTimes()
+			mockEventUsecase.EXPECT().UpdateEvent(tt.id, tt.title, tt.description, tt.startTime, tt.endTime).Return(mockEvent, tt.updateEventErr).AnyTimes()
 			mockEvent.EXPECT().ID().Return(event.NewEventID()).AnyTimes()
 			mockEvent.EXPECT().Title().Return(event.Title(tt.title)).AnyTimes()
 			mockEvent.EXPECT().Description().Return(event.Description(tt.description)).AnyTimes()

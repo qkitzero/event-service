@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/qkitzero/event-service/internal/domain/event"
 	mocks "github.com/qkitzero/event-service/mocks/domain/event"
@@ -61,17 +62,17 @@ func TestUpdateEvent(t *testing.T) {
 		eventID     string
 		title       string
 		description string
-		startTime   time.Time
-		endTime     time.Time
+		startTime   *timestamppb.Timestamp
+		endTime     *timestamppb.Timestamp
 		findByIDErr error
 		updateErr   error
 	}{
-		{"success update event", true, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", time.Now(), time.Now(), nil, nil},
-		{"failure empty event id", false, "", "title", "description", time.Now(), time.Now(), nil, nil},
-		{"failure empty title", false, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "", "description", time.Now(), time.Now(), nil, nil},
-		{"failure empty description", false, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "", time.Now(), time.Now(), nil, nil},
-		{"failure find by id error", false, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", time.Now(), time.Now(), errors.New("find by id error"), nil},
-		{"failure update error", false, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", time.Now(), time.Now(), nil, errors.New("update error")},
+		{"success update event", true, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), nil, nil},
+		{"failure empty event id", false, "", "title", "description", timestamppb.Now(), timestamppb.Now(), nil, nil},
+		{"failure empty title", false, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "", "description", timestamppb.Now(), timestamppb.Now(), nil, nil},
+		{"failure empty description", false, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "", timestamppb.Now(), timestamppb.Now(), nil, nil},
+		{"failure find by id error", false, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), errors.New("find by id error"), nil},
+		{"failure update error", false, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), nil, errors.New("update error")},
 	}
 	for _, tt := range tests {
 		tt := tt
@@ -82,6 +83,8 @@ func TestUpdateEvent(t *testing.T) {
 			defer ctrl.Finish()
 
 			mockEvent := mocks.NewMockEvent(ctrl)
+			mockEvent.EXPECT().StartTime().Return(time.Now()).AnyTimes()
+			mockEvent.EXPECT().EndTime().Return(time.Now()).AnyTimes()
 			mockEvent.EXPECT().Update(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return().AnyTimes()
 			mockEventRepository := mocks.NewMockEventRepository(ctrl)
 			mockEventRepository.EXPECT().FindByID(gomock.Any()).Return(mockEvent, tt.findByIDErr).AnyTimes()
