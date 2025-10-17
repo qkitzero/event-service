@@ -11,7 +11,6 @@ package mocks
 
 import (
 	reflect "reflect"
-	time "time"
 
 	event "github.com/qkitzero/event-service/internal/domain/event"
 	gomock "go.uber.org/mock/gomock"
@@ -43,62 +42,62 @@ func (m *MockEventUsecase) EXPECT() *MockEventUsecaseMockRecorder {
 }
 
 // CreateEvent mocks base method.
-func (m *MockEventUsecase) CreateEvent(userIDStr, titleStr, descriptionStr string, startTime, endTime time.Time) (event.Event, error) {
+func (m *MockEventUsecase) CreateEvent(userID, title, description string, startTime, endTime *timestamppb.Timestamp) (event.Event, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateEvent", userIDStr, titleStr, descriptionStr, startTime, endTime)
+	ret := m.ctrl.Call(m, "CreateEvent", userID, title, description, startTime, endTime)
 	ret0, _ := ret[0].(event.Event)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateEvent indicates an expected call of CreateEvent.
-func (mr *MockEventUsecaseMockRecorder) CreateEvent(userIDStr, titleStr, descriptionStr, startTime, endTime any) *gomock.Call {
+func (mr *MockEventUsecaseMockRecorder) CreateEvent(userID, title, description, startTime, endTime any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEvent", reflect.TypeOf((*MockEventUsecase)(nil).CreateEvent), userIDStr, titleStr, descriptionStr, startTime, endTime)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEvent", reflect.TypeOf((*MockEventUsecase)(nil).CreateEvent), userID, title, description, startTime, endTime)
 }
 
 // DeleteEvent mocks base method.
-func (m *MockEventUsecase) DeleteEvent(eventIDStr string) error {
+func (m *MockEventUsecase) DeleteEvent(eventID string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteEvent", eventIDStr)
+	ret := m.ctrl.Call(m, "DeleteEvent", eventID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // DeleteEvent indicates an expected call of DeleteEvent.
-func (mr *MockEventUsecaseMockRecorder) DeleteEvent(eventIDStr any) *gomock.Call {
+func (mr *MockEventUsecaseMockRecorder) DeleteEvent(eventID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteEvent", reflect.TypeOf((*MockEventUsecase)(nil).DeleteEvent), eventIDStr)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteEvent", reflect.TypeOf((*MockEventUsecase)(nil).DeleteEvent), eventID)
 }
 
 // GetEvent mocks base method.
-func (m *MockEventUsecase) GetEvent(eventIDStr string) (event.Event, error) {
+func (m *MockEventUsecase) GetEvent(eventID string) (event.Event, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetEvent", eventIDStr)
+	ret := m.ctrl.Call(m, "GetEvent", eventID)
 	ret0, _ := ret[0].(event.Event)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetEvent indicates an expected call of GetEvent.
-func (mr *MockEventUsecaseMockRecorder) GetEvent(eventIDStr any) *gomock.Call {
+func (mr *MockEventUsecaseMockRecorder) GetEvent(eventID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEvent", reflect.TypeOf((*MockEventUsecase)(nil).GetEvent), eventIDStr)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEvent", reflect.TypeOf((*MockEventUsecase)(nil).GetEvent), eventID)
 }
 
 // ListEvents mocks base method.
-func (m *MockEventUsecase) ListEvents(userIDStr string) ([]event.Event, error) {
+func (m *MockEventUsecase) ListEvents(userID string) ([]event.Event, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListEvents", userIDStr)
+	ret := m.ctrl.Call(m, "ListEvents", userID)
 	ret0, _ := ret[0].([]event.Event)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListEvents indicates an expected call of ListEvents.
-func (mr *MockEventUsecaseMockRecorder) ListEvents(userIDStr any) *gomock.Call {
+func (mr *MockEventUsecaseMockRecorder) ListEvents(userID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListEvents", reflect.TypeOf((*MockEventUsecase)(nil).ListEvents), userIDStr)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListEvents", reflect.TypeOf((*MockEventUsecase)(nil).ListEvents), userID)
 }
 
 // UpdateEvent mocks base method.
