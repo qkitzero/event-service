@@ -20,15 +20,17 @@ func TestCreateEvent(t *testing.T) {
 		userID      string
 		title       string
 		description string
-		startTime   time.Time
-		endTime     time.Time
+		startTime   *timestamppb.Timestamp
+		endTime     *timestamppb.Timestamp
 		createErr   error
 	}{
-		{"success create event", true, "6d322c66-bf4d-427a-970c-874f3745f653", "title", "description", time.Now(), time.Now(), nil},
-		{"failure empty user id", false, "", "title", "description", time.Now(), time.Now(), nil},
-		{"failure empty title", false, "6d322c66-bf4d-427a-970c-874f3745f653", "", "description", time.Now(), time.Now(), nil},
-		{"failure empty description", false, "6d322c66-bf4d-427a-970c-874f3745f653", "title", "", time.Now(), time.Now(), nil},
-		{"failure create error", false, "6d322c66-bf4d-427a-970c-874f3745f653", "title", "description", time.Now(), time.Now(), errors.New("create error")},
+		{"success create event", true, "6d322c66-bf4d-427a-970c-874f3745f653", "title", "description", timestamppb.Now(), timestamppb.Now(), nil},
+		{"failure empty user id", false, "", "title", "description", timestamppb.Now(), timestamppb.Now(), nil},
+		{"failure empty title", false, "6d322c66-bf4d-427a-970c-874f3745f653", "", "description", timestamppb.Now(), timestamppb.Now(), nil},
+		{"failure empty description", false, "6d322c66-bf4d-427a-970c-874f3745f653", "title", "", timestamppb.Now(), timestamppb.Now(), nil},
+		{"failure nil start time", false, "6d322c66-bf4d-427a-970c-874f3745f653", "title", "description", nil, timestamppb.Now(), nil},
+		{"failure nil end time", false, "6d322c66-bf4d-427a-970c-874f3745f653", "title", "description", timestamppb.Now(), nil, nil},
+		{"failure create error", false, "6d322c66-bf4d-427a-970c-874f3745f653", "title", "description", timestamppb.Now(), timestamppb.Now(), errors.New("create error")},
 	}
 	for _, tt := range tests {
 		tt := tt
