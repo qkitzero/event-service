@@ -5,11 +5,12 @@ import (
 
 	"github.com/qkitzero/event-service/internal/domain/event"
 	"github.com/qkitzero/event-service/internal/domain/user"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type EventUsecase interface {
 	CreateEvent(userIDStr, titleStr, descriptionStr string, startTime, endTime time.Time) (event.Event, error)
-	UpdateEvent(eventIDStr, titleStr, descriptionStr string, startTime, endTime time.Time) (event.Event, error)
+	UpdateEvent(eventID, title, description string, startTime, endTime *timestamppb.Timestamp) (event.Event, error)
 	GetEvent(eventIDStr string) (event.Event, error)
 	ListEvents(userIDStr string) ([]event.Event, error)
 	DeleteEvent(eventIDStr string) error
@@ -48,34 +49,44 @@ func (s *eventUsecase) CreateEvent(userIDStr, titleStr, descriptionStr string, s
 	return e, nil
 }
 
-func (s *eventUsecase) UpdateEvent(eventIDStr, titleStr, descriptionStr string, startTime, endTime time.Time) (event.Event, error) {
-	eventID, err := event.NewEventIDFromString(eventIDStr)
+func (s *eventUsecase) UpdateEvent(eventID, title, description string, startTime, endTime *timestamppb.Timestamp) (event.Event, error) {
+	id, err := event.NewEventIDFromString(eventID)
 	if err != nil {
 		return nil, err
 	}
 
-	e, err := s.repo.FindByID(eventID)
+	foundEvent, err := s.repo.FindByID(id)
 	if err != nil {
 		return nil, err
 	}
 
-	title, err := event.NewTitle(titleStr)
+	newTitle, err := event.NewTitle(title)
 	if err != nil {
 		return nil, err
 	}
 
-	description, err := event.NewDescription(descriptionStr)
+	newDescription, err := event.NewDescription(description)
 	if err != nil {
 		return nil, err
 	}
 
-	e.Update(title, description, startTime, endTime)
+	newStartTime := foundEvent.StartTime()
+	if startTime != nil {
+		newStartTime = startTime.AsTime()
+	}
 
-	if err := s.repo.Update(e); err != nil {
+	newEndTime := foundEvent.EndTime()
+	if endTime != nil {
+		newEndTime = endTime.AsTime()
+	}
+
+	foundEvent.Update(newTitle, newDescription, newStartTime, newEndTime)
+
+	if err := s.repo.Update(foundEvent); err != nil {
 		return nil, err
 	}
 
-	return e, nil
+	return foundEvent, nil
 }
 
 func (s *eventUsecase) GetEvent(eventIDStr string) (event.Event, error) {

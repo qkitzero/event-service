@@ -57,7 +57,7 @@ func (h *EventHandler) UpdateEvent(ctx context.Context, req *eventv1.UpdateEvent
 		return nil, err
 	}
 
-	event, err := h.eventUsecase.UpdateEvent(req.GetEvent().GetId(), req.GetEvent().GetTitle(), req.GetEvent().GetDescription(), req.GetEvent().GetStartTime().AsTime(), req.GetEvent().GetEndTime().AsTime())
+	event, err := h.eventUsecase.UpdateEvent(req.GetEvent().GetId(), req.GetEvent().GetTitle(), req.GetEvent().GetDescription(), req.GetEvent().GetStartTime(), req.GetEvent().GetEndTime())
 	if err != nil {
 		return nil, err
 	}
