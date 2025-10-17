@@ -15,6 +15,7 @@ import (
 
 	event "github.com/qkitzero/event-service/internal/domain/event"
 	gomock "go.uber.org/mock/gomock"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // MockEventUsecase is a mock of EventUsecase interface.
@@ -101,16 +102,16 @@ func (mr *MockEventUsecaseMockRecorder) ListEvents(userIDStr any) *gomock.Call {
 }
 
 // UpdateEvent mocks base method.
-func (m *MockEventUsecase) UpdateEvent(eventIDStr, titleStr, descriptionStr string, startTime, endTime time.Time) (event.Event, error) {
+func (m *MockEventUsecase) UpdateEvent(eventID, title, description string, startTime, endTime *timestamppb.Timestamp) (event.Event, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateEvent", eventIDStr, titleStr, descriptionStr, startTime, endTime)
+	ret := m.ctrl.Call(m, "UpdateEvent", eventID, title, description, startTime, endTime)
 	ret0, _ := ret[0].(event.Event)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdateEvent indicates an expected call of UpdateEvent.
-func (mr *MockEventUsecaseMockRecorder) UpdateEvent(eventIDStr, titleStr, descriptionStr, startTime, endTime any) *gomock.Call {
+func (mr *MockEventUsecaseMockRecorder) UpdateEvent(eventID, title, description, startTime, endTime any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateEvent", reflect.TypeOf((*MockEventUsecase)(nil).UpdateEvent), eventIDStr, titleStr, descriptionStr, startTime, endTime)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateEvent", reflect.TypeOf((*MockEventUsecase)(nil).UpdateEvent), eventID, title, description, startTime, endTime)
 }
