@@ -1,18 +1,20 @@
 package event
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/qkitzero/event-service/internal/domain/event"
 	"github.com/qkitzero/event-service/internal/domain/user"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type EventUsecase interface {
-	CreateEvent(userIDStr, titleStr, descriptionStr string, startTime, endTime time.Time) (event.Event, error)
-	UpdateEvent(eventIDStr, titleStr, descriptionStr string, startTime, endTime time.Time) (event.Event, error)
-	GetEvent(eventIDStr string) (event.Event, error)
-	ListEvents(userIDStr string) ([]event.Event, error)
-	DeleteEvent(eventIDStr string) error
+	CreateEvent(userID, title, description string, startTime, endTime *timestamppb.Timestamp) (event.Event, error)
+	UpdateEvent(eventID, title, description string, startTime, endTime *timestamppb.Timestamp) (event.Event, error)
+	GetEvent(eventID string) (event.Event, error)
+	ListEvents(userID string) ([]event.Event, error)
+	DeleteEvent(eventID string) error
 }
 
 type eventUsecase struct {
@@ -23,82 +25,102 @@ func NewEventUsecase(repo event.EventRepository) EventUsecase {
 	return &eventUsecase{repo: repo}
 }
 
-func (s *eventUsecase) CreateEvent(userIDStr, titleStr, descriptionStr string, startTime, endTime time.Time) (event.Event, error) {
-	userID, err := user.NewUserIDFromString(userIDStr)
+func (s *eventUsecase) CreateEvent(userID, title, description string, startTime, endTime *timestamppb.Timestamp) (event.Event, error) {
+	newUserID, err := user.NewUserIDFromString(userID)
 	if err != nil {
 		return nil, err
 	}
 
-	title, err := event.NewTitle(titleStr)
+	newTitle, err := event.NewTitle(title)
 	if err != nil {
 		return nil, err
 	}
 
-	description, err := event.NewDescription(descriptionStr)
+	newDescription, err := event.NewDescription(description)
 	if err != nil {
 		return nil, err
 	}
 
-	e := event.NewEvent(event.NewEventID(), userID, title, description, startTime, endTime, time.Now(), time.Now())
+	if startTime == nil {
+		return nil, fmt.Errorf("start time is required")
+	}
+	newStartTime := startTime.AsTime()
 
-	if err := s.repo.Create(e); err != nil {
+	if endTime == nil {
+		return nil, fmt.Errorf("end time is required")
+	}
+	newEndTime := endTime.AsTime()
+
+	newEvent := event.NewEvent(event.NewEventID(), newUserID, newTitle, newDescription, newStartTime, newEndTime, time.Now(), time.Now())
+
+	if err := s.repo.Create(newEvent); err != nil {
 		return nil, err
 	}
 
-	return e, nil
+	return newEvent, nil
 }
 
-func (s *eventUsecase) UpdateEvent(eventIDStr, titleStr, descriptionStr string, startTime, endTime time.Time) (event.Event, error) {
-	eventID, err := event.NewEventIDFromString(eventIDStr)
+func (s *eventUsecase) UpdateEvent(eventID, title, description string, startTime, endTime *timestamppb.Timestamp) (event.Event, error) {
+	id, err := event.NewEventIDFromString(eventID)
 	if err != nil {
 		return nil, err
 	}
 
-	e, err := s.repo.FindByID(eventID)
+	foundEvent, err := s.repo.FindByID(id)
 	if err != nil {
 		return nil, err
 	}
 
-	title, err := event.NewTitle(titleStr)
+	newTitle, err := event.NewTitle(title)
 	if err != nil {
 		return nil, err
 	}
 
-	description, err := event.NewDescription(descriptionStr)
+	newDescription, err := event.NewDescription(description)
 	if err != nil {
 		return nil, err
 	}
 
-	e.Update(title, description, startTime, endTime)
+	newStartTime := foundEvent.StartTime()
+	if startTime != nil {
+		newStartTime = startTime.AsTime()
+	}
 
-	if err := s.repo.Update(e); err != nil {
+	newEndTime := foundEvent.EndTime()
+	if endTime != nil {
+		newEndTime = endTime.AsTime()
+	}
+
+	foundEvent.Update(newTitle, newDescription, newStartTime, newEndTime)
+
+	if err := s.repo.Update(foundEvent); err != nil {
 		return nil, err
 	}
 
-	return e, nil
+	return foundEvent, nil
 }
 
-func (s *eventUsecase) GetEvent(eventIDStr string) (event.Event, error) {
-	eventID, err := event.NewEventIDFromString(eventIDStr)
+func (s *eventUsecase) GetEvent(eventID string) (event.Event, error) {
+	id, err := event.NewEventIDFromString(eventID)
 	if err != nil {
 		return nil, err
 	}
 
-	e, err := s.repo.FindByID(eventID)
+	foundEvent, err := s.repo.FindByID(id)
 	if err != nil {
 		return nil, err
 	}
 
-	return e, nil
+	return foundEvent, nil
 }
 
-func (s *eventUsecase) ListEvents(userIDStr string) ([]event.Event, error) {
-	userID, err := user.NewUserIDFromString(userIDStr)
+func (s *eventUsecase) ListEvents(userID string) ([]event.Event, error) {
+	uid, err := user.NewUserIDFromString(userID)
 	if err != nil {
 		return nil, err
 	}
 
-	events, err := s.repo.ListByUserID(userID)
+	events, err := s.repo.ListByUserID(uid)
 	if err != nil {
 		return nil, err
 	}
@@ -106,13 +128,13 @@ func (s *eventUsecase) ListEvents(userIDStr string) ([]event.Event, error) {
 	return events, nil
 }
 
-func (s *eventUsecase) DeleteEvent(eventIDStr string) error {
-	eventID, err := event.NewEventIDFromString(eventIDStr)
+func (s *eventUsecase) DeleteEvent(eventID string) error {
+	id, err := event.NewEventIDFromString(eventID)
 	if err != nil {
 		return err
 	}
 
-	if err := s.repo.Delete(eventID); err != nil {
+	if err := s.repo.Delete(id); err != nil {
 		return err
 	}
 

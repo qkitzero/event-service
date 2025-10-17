@@ -35,7 +35,7 @@ func (h *EventHandler) CreateEvent(ctx context.Context, req *eventv1.CreateEvent
 		return nil, err
 	}
 
-	event, err := h.eventUsecase.CreateEvent(userID, req.GetTitle(), req.GetDescription(), req.GetStartTime().AsTime(), req.GetEndTime().AsTime())
+	event, err := h.eventUsecase.CreateEvent(userID, req.GetTitle(), req.GetDescription(), req.GetStartTime(), req.GetEndTime())
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (h *EventHandler) UpdateEvent(ctx context.Context, req *eventv1.UpdateEvent
 		return nil, err
 	}
 
-	event, err := h.eventUsecase.UpdateEvent(req.GetEvent().GetId(), req.GetEvent().GetTitle(), req.GetEvent().GetDescription(), req.GetEvent().GetStartTime().AsTime(), req.GetEvent().GetEndTime().AsTime())
+	event, err := h.eventUsecase.UpdateEvent(req.GetEvent().GetId(), req.GetEvent().GetTitle(), req.GetEvent().GetDescription(), req.GetEvent().GetStartTime(), req.GetEvent().GetEndTime())
 	if err != nil {
 		return nil, err
 	}
