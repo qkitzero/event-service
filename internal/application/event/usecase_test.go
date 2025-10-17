@@ -68,6 +68,7 @@ func TestUpdateEvent(t *testing.T) {
 		updateErr   error
 	}{
 		{"success update event", true, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), nil, nil},
+		{"success update event with nil times", true, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", nil, nil, nil, nil},
 		{"failure empty event id", false, "", "title", "description", timestamppb.Now(), timestamppb.Now(), nil, nil},
 		{"failure empty title", false, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "", "description", timestamppb.Now(), timestamppb.Now(), nil, nil},
 		{"failure empty description", false, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "", timestamppb.Now(), timestamppb.Now(), nil, nil},
