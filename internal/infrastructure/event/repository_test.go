@@ -273,7 +273,7 @@ func TestListByUserID(t *testing.T) {
 			setup: func(mock sqlmock.Sqlmock, userID user.UserID) {
 				eventRows := sqlmock.NewRows([]string{"id", "user_id", "title", "description", "start_time", "end_time", "created_at", "updated_at"}).
 					AddRow(uuid.New(), userID, "title", "description", time.Now(), time.Now(), time.Now(), time.Now())
-				mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "events" WHERE user_id = $1`)).
+				mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "events" WHERE user_id = $1 ORDER BY start_time asc, end_time asc`)).
 					WithArgs(userID).
 					WillReturnRows(eventRows)
 			},
@@ -283,7 +283,7 @@ func TestListByUserID(t *testing.T) {
 			success: false,
 			userID:  user.UserID{UUID: uuid.New()},
 			setup: func(mock sqlmock.Sqlmock, userID user.UserID) {
-				mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "events" WHERE user_id = $1`)).
+				mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "events" WHERE user_id = $1 ORDER BY start_time asc, end_time asc`)).
 					WithArgs(userID).
 					WillReturnError(errors.New("find events error"))
 			},
