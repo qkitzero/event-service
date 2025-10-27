@@ -10,8 +10,8 @@ import (
 )
 
 type EventUsecase interface {
-	CreateEvent(userID, title, description string, startTime, endTime *timestamppb.Timestamp) (event.Event, error)
-	UpdateEvent(eventID, title, description string, startTime, endTime *timestamppb.Timestamp) (event.Event, error)
+	CreateEvent(userID, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error)
+	UpdateEvent(eventID, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error)
 	GetEvent(eventID string) (event.Event, error)
 	ListEvents(userID string) ([]event.Event, error)
 	DeleteEvent(eventID string) error
@@ -25,7 +25,7 @@ func NewEventUsecase(repo event.EventRepository) EventUsecase {
 	return &eventUsecase{repo: repo}
 }
 
-func (s *eventUsecase) CreateEvent(userID, title, description string, startTime, endTime *timestamppb.Timestamp) (event.Event, error) {
+func (s *eventUsecase) CreateEvent(userID, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error) {
 	newUserID, err := user.NewUserIDFromString(userID)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,12 @@ func (s *eventUsecase) CreateEvent(userID, title, description string, startTime,
 	}
 	newEndTime := endTime.AsTime()
 
-	newEvent := event.NewEvent(event.NewEventID(), newUserID, newTitle, newDescription, newStartTime, newEndTime, time.Now(), time.Now())
+	newColor, err := event.NewColor(color)
+	if err != nil {
+		return nil, err
+	}
+
+	newEvent := event.NewEvent(event.NewEventID(), newUserID, newTitle, newDescription, newStartTime, newEndTime, newColor, time.Now(), time.Now())
 
 	if err := s.repo.Create(newEvent); err != nil {
 		return nil, err
@@ -60,7 +65,7 @@ func (s *eventUsecase) CreateEvent(userID, title, description string, startTime,
 	return newEvent, nil
 }
 
-func (s *eventUsecase) UpdateEvent(eventID, title, description string, startTime, endTime *timestamppb.Timestamp) (event.Event, error) {
+func (s *eventUsecase) UpdateEvent(eventID, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error) {
 	id, err := event.NewEventIDFromString(eventID)
 	if err != nil {
 		return nil, err
@@ -91,7 +96,12 @@ func (s *eventUsecase) UpdateEvent(eventID, title, description string, startTime
 		newEndTime = endTime.AsTime()
 	}
 
-	foundEvent.Update(newTitle, newDescription, newStartTime, newEndTime)
+	newColor, err := event.NewColor(color)
+	if err != nil {
+		return nil, err
+	}
+
+	foundEvent.Update(newTitle, newDescription, newStartTime, newEndTime, newColor)
 
 	if err := s.repo.Update(foundEvent); err != nil {
 		return nil, err

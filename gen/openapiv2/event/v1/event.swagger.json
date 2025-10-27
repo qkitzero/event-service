@@ -185,6 +185,9 @@
             "endTime": {
               "type": "string",
               "format": "date-time"
+            },
+            "color": {
+              "type": "string"
             }
           }
         }
@@ -234,6 +237,9 @@
         "endTime": {
           "type": "string",
           "format": "date-time"
+        },
+        "color": {
+          "type": "string"
         }
       }
     },
@@ -267,6 +273,9 @@
         "endTime": {
           "type": "string",
           "format": "date-time"
+        },
+        "color": {
+          "type": "string"
         }
       }
     },

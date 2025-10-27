@@ -37,6 +37,7 @@ message Event {
   string description = 3;
   google.protobuf.Timestamp start_time = 4;
   google.protobuf.Timestamp end_time = 5;
+  string color = 6;
 }
 
 message CreateEventRequest {
@@ -44,6 +45,7 @@ message CreateEventRequest {
   string description = 2;
   google.protobuf.Timestamp start_time = 3;
   google.protobuf.Timestamp end_time = 4;
+  optional string color = 5;
 }
 
 message CreateEventResponse {

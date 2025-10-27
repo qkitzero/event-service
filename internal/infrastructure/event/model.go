@@ -14,6 +14,7 @@ type EventModel struct {
 	Description event.Description
 	StartTime   time.Time
 	EndTime     time.Time
+	Color       event.Color
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
