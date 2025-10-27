@@ -42,18 +42,18 @@ func (m *MockEventUsecase) EXPECT() *MockEventUsecaseMockRecorder {
 }
 
 // CreateEvent mocks base method.
-func (m *MockEventUsecase) CreateEvent(userID, title, description string, startTime, endTime *timestamppb.Timestamp) (event.Event, error) {
+func (m *MockEventUsecase) CreateEvent(userID, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateEvent", userID, title, description, startTime, endTime)
+	ret := m.ctrl.Call(m, "CreateEvent", userID, title, description, startTime, endTime, color)
 	ret0, _ := ret[0].(event.Event)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateEvent indicates an expected call of CreateEvent.
-func (mr *MockEventUsecaseMockRecorder) CreateEvent(userID, title, description, startTime, endTime any) *gomock.Call {
+func (mr *MockEventUsecaseMockRecorder) CreateEvent(userID, title, description, startTime, endTime, color any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEvent", reflect.TypeOf((*MockEventUsecase)(nil).CreateEvent), userID, title, description, startTime, endTime)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEvent", reflect.TypeOf((*MockEventUsecase)(nil).CreateEvent), userID, title, description, startTime, endTime, color)
 }
 
 // DeleteEvent mocks base method.
@@ -101,16 +101,16 @@ func (mr *MockEventUsecaseMockRecorder) ListEvents(userID any) *gomock.Call {
 }
 
 // UpdateEvent mocks base method.
-func (m *MockEventUsecase) UpdateEvent(eventID, title, description string, startTime, endTime *timestamppb.Timestamp) (event.Event, error) {
+func (m *MockEventUsecase) UpdateEvent(eventID, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateEvent", eventID, title, description, startTime, endTime)
+	ret := m.ctrl.Call(m, "UpdateEvent", eventID, title, description, startTime, endTime, color)
 	ret0, _ := ret[0].(event.Event)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdateEvent indicates an expected call of UpdateEvent.
-func (mr *MockEventUsecaseMockRecorder) UpdateEvent(eventID, title, description, startTime, endTime any) *gomock.Call {
+func (mr *MockEventUsecaseMockRecorder) UpdateEvent(eventID, title, description, startTime, endTime, color any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateEvent", reflect.TypeOf((*MockEventUsecase)(nil).UpdateEvent), eventID, title, description, startTime, endTime)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateEvent", reflect.TypeOf((*MockEventUsecase)(nil).UpdateEvent), eventID, title, description, startTime, endTime, color)
 }
