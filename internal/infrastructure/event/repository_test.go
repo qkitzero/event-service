@@ -31,8 +31,8 @@ func TestCreate(t *testing.T) {
 			setup: func(mock sqlmock.Sqlmock, event event.Event) {
 				mock.ExpectBegin()
 
-				mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO "events" ("id","user_id","title","description","start_time","end_time","created_at","updated_at") VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`)).
-					WithArgs(event.ID(), event.UserID(), event.Title(), event.Description(), testutil.AnyTime{}, testutil.AnyTime{}, testutil.AnyTime{}, testutil.AnyTime{}).
+				mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO "events" ("id","user_id","title","description","start_time","end_time","color","created_at","updated_at") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`)).
+					WithArgs(event.ID(), event.UserID(), event.Title(), event.Description(), testutil.AnyTime{}, testutil.AnyTime{}, event.Color(), testutil.AnyTime{}, testutil.AnyTime{}).
 					WillReturnResult(sqlmock.NewResult(1, 1))
 
 				mock.ExpectCommit()
@@ -44,8 +44,8 @@ func TestCreate(t *testing.T) {
 			setup: func(mock sqlmock.Sqlmock, event event.Event) {
 				mock.ExpectBegin()
 
-				mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO "events" ("id","user_id","title","description","start_time","end_time","created_at","updated_at") VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`)).
-					WithArgs(event.ID(), event.UserID(), event.Title(), event.Description(), testutil.AnyTime{}, testutil.AnyTime{}, testutil.AnyTime{}, testutil.AnyTime{}).
+				mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO "events" ("id","user_id","title","description","start_time","end_time","color","created_at","updated_at") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`)).
+					WithArgs(event.ID(), event.UserID(), event.Title(), event.Description(), testutil.AnyTime{}, testutil.AnyTime{}, event.Color(), testutil.AnyTime{}, testutil.AnyTime{}).
 					WillReturnError(errors.New("create event error"))
 
 				mock.ExpectRollback()
@@ -79,6 +79,7 @@ func TestCreate(t *testing.T) {
 			mockEvent.EXPECT().EndTime().Return(time.Now()).AnyTimes()
 			mockEvent.EXPECT().CreatedAt().Return(time.Now()).AnyTimes()
 			mockEvent.EXPECT().UpdatedAt().Return(time.Now()).AnyTimes()
+			mockEvent.EXPECT().Color().Return(event.Color("#FFFFFF")).AnyTimes()
 
 			tt.setup(mock, mockEvent)
 
@@ -112,8 +113,8 @@ func TestUpdate(t *testing.T) {
 			setup: func(mock sqlmock.Sqlmock, event event.Event) {
 				mock.ExpectBegin()
 
-				mock.ExpectExec(regexp.QuoteMeta(`UPDATE "events" SET "user_id"=$1,"title"=$2,"description"=$3,"start_time"=$4,"end_time"=$5,"created_at"=$6,"updated_at"=$7 WHERE "id" = $8`)).
-					WithArgs(event.UserID(), event.Title(), event.Description(), testutil.AnyTime{}, testutil.AnyTime{}, testutil.AnyTime{}, testutil.AnyTime{}, event.ID()).
+				mock.ExpectExec(regexp.QuoteMeta(`UPDATE "events" SET "user_id"=$1,"title"=$2,"description"=$3,"start_time"=$4,"end_time"=$5,"color"=$6,"created_at"=$7,"updated_at"=$8 WHERE "id" = $9`)).
+					WithArgs(event.UserID(), event.Title(), event.Description(), testutil.AnyTime{}, testutil.AnyTime{}, event.Color(), testutil.AnyTime{}, testutil.AnyTime{}, event.ID()).
 					WillReturnResult(sqlmock.NewResult(1, 1))
 
 				mock.ExpectCommit()
@@ -125,8 +126,8 @@ func TestUpdate(t *testing.T) {
 			setup: func(mock sqlmock.Sqlmock, event event.Event) {
 				mock.ExpectBegin()
 
-				mock.ExpectExec(regexp.QuoteMeta(`UPDATE "events" SET "user_id"=$1,"title"=$2,"description"=$3,"start_time"=$4,"end_time"=$5,"created_at"=$6,"updated_at"=$7 WHERE "id" = $8`)).
-					WithArgs(event.UserID(), event.Title(), event.Description(), testutil.AnyTime{}, testutil.AnyTime{}, testutil.AnyTime{}, testutil.AnyTime{}, event.ID()).
+				mock.ExpectExec(regexp.QuoteMeta(`UPDATE "events" SET "user_id"=$1,"title"=$2,"description"=$3,"start_time"=$4,"end_time"=$5,"color"=$6,"created_at"=$7,"updated_at"=$8 WHERE "id" = $9`)).
+					WithArgs(event.UserID(), event.Title(), event.Description(), testutil.AnyTime{}, testutil.AnyTime{}, event.Color(), testutil.AnyTime{}, testutil.AnyTime{}, event.ID()).
 					WillReturnError(errors.New("update event error"))
 
 				mock.ExpectRollback()
@@ -160,6 +161,7 @@ func TestUpdate(t *testing.T) {
 			mockEvent.EXPECT().EndTime().Return(time.Now()).AnyTimes()
 			mockEvent.EXPECT().CreatedAt().Return(time.Now()).AnyTimes()
 			mockEvent.EXPECT().UpdatedAt().Return(time.Now()).AnyTimes()
+			mockEvent.EXPECT().Color().Return(event.Color("#FFFFFF")).AnyTimes()
 
 			tt.setup(mock, mockEvent)
 
@@ -193,8 +195,8 @@ func TestFindByID(t *testing.T) {
 			success: true,
 			id:      event.EventID{UUID: uuid.New()},
 			setup: func(mock sqlmock.Sqlmock, id event.EventID) {
-				eventRows := sqlmock.NewRows([]string{"id", "user_id", "title", "description", "start_time", "end_time", "created_at", "updated_at"}).
-					AddRow(id, uuid.New(), "title", "description", time.Now(), time.Now(), time.Now(), time.Now())
+				eventRows := sqlmock.NewRows([]string{"id", "user_id", "title", "description", "start_time", "end_time", "color", "created_at", "updated_at"}).
+					AddRow(id, uuid.New(), "title", "description", time.Now(), time.Now(), "#FFFFFF", time.Now(), time.Now())
 				mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "events" WHERE id = $1 ORDER BY "events"."id" LIMIT $2`)).
 					WithArgs(id, 1).
 					WillReturnRows(eventRows)
@@ -271,8 +273,8 @@ func TestListByUserID(t *testing.T) {
 			success: true,
 			userID:  user.UserID{UUID: uuid.New()},
 			setup: func(mock sqlmock.Sqlmock, userID user.UserID) {
-				eventRows := sqlmock.NewRows([]string{"id", "user_id", "title", "description", "start_time", "end_time", "created_at", "updated_at"}).
-					AddRow(uuid.New(), userID, "title", "description", time.Now(), time.Now(), time.Now(), time.Now())
+				eventRows := sqlmock.NewRows([]string{"id", "user_id", "title", "description", "start_time", "end_time", "color", "created_at", "updated_at"}).
+					AddRow(uuid.New(), userID, "title", "description", time.Now(), time.Now(), "#FFFFFF", time.Now(), time.Now())
 				mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "events" WHERE user_id = $1 ORDER BY start_time asc, end_time asc`)).
 					WithArgs(userID).
 					WillReturnRows(eventRows)
