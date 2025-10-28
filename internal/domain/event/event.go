@@ -13,9 +13,10 @@ type Event interface {
 	Description() Description
 	StartTime() time.Time
 	EndTime() time.Time
+	Color() Color
 	CreatedAt() time.Time
 	UpdatedAt() time.Time
-	Update(title Title, description Description, startTime, endTime time.Time)
+	Update(title Title, description Description, startTime, endTime time.Time, color Color)
 }
 
 type event struct {
@@ -25,6 +26,7 @@ type event struct {
 	description Description
 	startTime   time.Time
 	endTime     time.Time
+	color       Color
 	createdAt   time.Time
 	updatedAt   time.Time
 }
@@ -53,6 +55,10 @@ func (e event) EndTime() time.Time {
 	return e.endTime
 }
 
+func (e event) Color() Color {
+	return e.color
+}
+
 func (e event) CreatedAt() time.Time {
 	return e.createdAt
 }
@@ -61,11 +67,12 @@ func (e event) UpdatedAt() time.Time {
 	return e.updatedAt
 }
 
-func (e *event) Update(title Title, description Description, startTime, endTime time.Time) {
+func (e *event) Update(title Title, description Description, startTime, endTime time.Time, color Color) {
 	e.title = title
 	e.description = description
 	e.startTime = startTime
 	e.endTime = endTime
+	e.color = color
 	e.updatedAt = time.Now()
 }
 
@@ -76,6 +83,7 @@ func NewEvent(
 	description Description,
 	startTime time.Time,
 	endTime time.Time,
+	color Color,
 	createdAt time.Time,
 	updatedAt time.Time,
 ) Event {
@@ -86,6 +94,7 @@ func NewEvent(
 		description: description,
 		startTime:   startTime,
 		endTime:     endTime,
+		color:       color,
 		createdAt:   createdAt,
 		updatedAt:   updatedAt,
 	}

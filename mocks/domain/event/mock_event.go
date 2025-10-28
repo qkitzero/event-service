@@ -42,6 +42,20 @@ func (m *MockEvent) EXPECT() *MockEventMockRecorder {
 	return m.recorder
 }
 
+// Color mocks base method.
+func (m *MockEvent) Color() event.Color {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Color")
+	ret0, _ := ret[0].(event.Color)
+	return ret0
+}
+
+// Color indicates an expected call of Color.
+func (mr *MockEventMockRecorder) Color() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Color", reflect.TypeOf((*MockEvent)(nil).Color))
+}
+
 // CreatedAt mocks base method.
 func (m *MockEvent) CreatedAt() time.Time {
 	m.ctrl.T.Helper()
@@ -127,15 +141,15 @@ func (mr *MockEventMockRecorder) Title() *gomock.Call {
 }
 
 // Update mocks base method.
-func (m *MockEvent) Update(title event.Title, description event.Description, startTime, endTime time.Time) {
+func (m *MockEvent) Update(title event.Title, description event.Description, startTime, endTime time.Time, color event.Color) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "Update", title, description, startTime, endTime)
+	m.ctrl.Call(m, "Update", title, description, startTime, endTime, color)
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockEventMockRecorder) Update(title, description, startTime, endTime any) *gomock.Call {
+func (mr *MockEventMockRecorder) Update(title, description, startTime, endTime, color any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockEvent)(nil).Update), title, description, startTime, endTime)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockEvent)(nil).Update), title, description, startTime, endTime, color)
 }
 
 // UpdatedAt mocks base method.
