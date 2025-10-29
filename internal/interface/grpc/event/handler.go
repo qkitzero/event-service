@@ -35,7 +35,7 @@ func (h *EventHandler) CreateEvent(ctx context.Context, req *eventv1.CreateEvent
 		return nil, err
 	}
 
-	event, err := h.eventUsecase.CreateEvent(userID, req.GetTitle(), req.GetDescription(), req.GetStartTime(), req.GetEndTime())
+	event, err := h.eventUsecase.CreateEvent(userID, req.GetTitle(), req.GetDescription(), req.GetStartTime(), req.GetEndTime(), req.GetColor())
 	if err != nil {
 		return nil, err
 	}
@@ -47,6 +47,7 @@ func (h *EventHandler) CreateEvent(ctx context.Context, req *eventv1.CreateEvent
 			Description: event.Description().String(),
 			StartTime:   timestamppb.New(event.StartTime()),
 			EndTime:     timestamppb.New(event.EndTime()),
+			Color:       event.Color().String(),
 		},
 	}, nil
 }
@@ -57,7 +58,7 @@ func (h *EventHandler) UpdateEvent(ctx context.Context, req *eventv1.UpdateEvent
 		return nil, err
 	}
 
-	event, err := h.eventUsecase.UpdateEvent(req.GetEvent().GetId(), req.GetEvent().GetTitle(), req.GetEvent().GetDescription(), req.GetEvent().GetStartTime(), req.GetEvent().GetEndTime())
+	event, err := h.eventUsecase.UpdateEvent(req.GetEvent().GetId(), req.GetEvent().GetTitle(), req.GetEvent().GetDescription(), req.GetEvent().GetStartTime(), req.GetEvent().GetEndTime(), req.GetEvent().GetColor())
 	if err != nil {
 		return nil, err
 	}
@@ -69,6 +70,7 @@ func (h *EventHandler) UpdateEvent(ctx context.Context, req *eventv1.UpdateEvent
 			Description: event.Description().String(),
 			StartTime:   timestamppb.New(event.StartTime()),
 			EndTime:     timestamppb.New(event.EndTime()),
+			Color:       event.Color().String(),
 		},
 	}, nil
 }
@@ -91,6 +93,7 @@ func (h *EventHandler) GetEvent(ctx context.Context, req *eventv1.GetEventReques
 			Description: event.Description().String(),
 			StartTime:   timestamppb.New(event.StartTime()),
 			EndTime:     timestamppb.New(event.EndTime()),
+			Color:       event.Color().String(),
 		},
 	}, nil
 }
@@ -114,6 +117,7 @@ func (h *EventHandler) ListEvents(ctx context.Context, req *eventv1.ListEventsRe
 			Description: event.Description().String(),
 			StartTime:   timestamppb.New(event.StartTime()),
 			EndTime:     timestamppb.New(event.EndTime()),
+			Color:       event.Color().String(),
 		}
 		pbEvents = append(pbEvents, pbEvent)
 	}

@@ -25,6 +25,10 @@ func TestNewEvent(t *testing.T) {
 	if err != nil {
 		t.Errorf("failed to new description: %v", err)
 	}
+	color, err := NewColor("#FF0000")
+	if err != nil {
+		t.Errorf("failed to new color: %v", err)
+	}
 	tests := []struct {
 		name        string
 		success     bool
@@ -34,17 +38,18 @@ func TestNewEvent(t *testing.T) {
 		description Description
 		startTime   time.Time
 		endTime     time.Time
+		color       Color
 		createdAt   time.Time
 		updatedAt   time.Time
 	}{
-		{"success new event", true, id, userID, title, description, time.Now(), time.Now(), time.Now(), time.Now()},
+		{"success new event", true, id, userID, title, description, time.Now(), time.Now(), color, time.Now(), time.Now()},
 	}
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			event := NewEvent(tt.id, tt.userID, tt.title, tt.description, tt.startTime, tt.endTime, tt.createdAt, tt.updatedAt)
+			event := NewEvent(tt.id, tt.userID, tt.title, tt.description, tt.startTime, tt.endTime, tt.color, tt.createdAt, tt.updatedAt)
 			if tt.success && event.ID() != tt.id {
 				t.Errorf("ID() = %v, want %v", event.ID(), tt.id)
 			}
@@ -62,6 +67,9 @@ func TestNewEvent(t *testing.T) {
 			}
 			if tt.success && !event.EndTime().Equal(tt.endTime) {
 				t.Errorf("EndTime() = %v, want %v", event.EndTime(), tt.endTime)
+			}
+			if tt.success && event.Color() != tt.color {
+				t.Errorf("Color() = %v, want %v", event.Color(), tt.color)
 			}
 			if tt.success && !event.CreatedAt().Equal(tt.createdAt) {
 				t.Errorf("CreatedAt() = %v, want %v", event.CreatedAt(), tt.createdAt)
@@ -91,6 +99,10 @@ func TestUpdate(t *testing.T) {
 	if err != nil {
 		t.Errorf("failed to new description: %v", err)
 	}
+	color, err := NewColor("#FF0000")
+	if err != nil {
+		t.Errorf("failed to new color: %v", err)
+	}
 	updatedTitle, err := NewTitle("updated title")
 	if err != nil {
 		t.Errorf("failed to new updated title: %v", err)
@@ -99,7 +111,11 @@ func TestUpdate(t *testing.T) {
 	if err != nil {
 		t.Errorf("failed to new updated description: %v", err)
 	}
-	event := NewEvent(id, userID, title, description, time.Now(), time.Now(), time.Now(), time.Now())
+	updatedColor, err := NewColor("#00FF00")
+	if err != nil {
+		t.Errorf("failed to new updated color: %v", err)
+	}
+	event := NewEvent(id, userID, title, description, time.Now(), time.Now(), color, time.Now(), time.Now())
 	tests := []struct {
 		name               string
 		success            bool
@@ -108,15 +124,16 @@ func TestUpdate(t *testing.T) {
 		updatedDescription Description
 		updatedStartTime   time.Time
 		updatedEndTime     time.Time
+		updatedColor       Color
 	}{
-		{"success update event", true, event, updatedTitle, updatedDescription, time.Now().Add(1 * time.Hour), time.Now().Add(2 * time.Hour)},
+		{"success update event", true, event, updatedTitle, updatedDescription, time.Now().Add(1 * time.Hour), time.Now().Add(2 * time.Hour), updatedColor},
 	}
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.event.Update(tt.updatedTitle, tt.updatedDescription, tt.updatedStartTime, tt.updatedEndTime)
+			tt.event.Update(tt.updatedTitle, tt.updatedDescription, tt.updatedStartTime, tt.updatedEndTime, tt.updatedColor)
 			if tt.success && tt.event.Title() != tt.updatedTitle {
 				t.Errorf("Title() = %v, want %v", tt.event.Title(), tt.updatedTitle)
 			}
@@ -128,6 +145,9 @@ func TestUpdate(t *testing.T) {
 			}
 			if tt.success && !tt.event.EndTime().Equal(tt.updatedEndTime) {
 				t.Errorf("EndTime() = %v, want %v", tt.event.EndTime(), tt.updatedEndTime)
+			}
+			if tt.success && tt.event.Color() != tt.updatedColor {
+				t.Errorf("Color() = %v, want %v", tt.event.Color(), tt.updatedColor)
 			}
 			if tt.success && !tt.event.CreatedAt().Before(tt.event.UpdatedAt()) {
 				t.Errorf("CreatedAt() = %v, UpdatedAt() = %v, want CreatedAt < UpdatedAt", tt.event.CreatedAt(), tt.event.UpdatedAt())

@@ -27,12 +27,13 @@ func TestCreateEvent(t *testing.T) {
 		description    string
 		startTime      *timestamppb.Timestamp
 		endTime        *timestamppb.Timestamp
+		color          *string
 		getUserErr     error
 		createEventErr error
 	}{
-		{"success create event", true, context.Background(), "title", "description", timestamppb.Now(), timestamppb.Now(), nil, nil},
-		{"failure get user error", false, context.Background(), "title", "description", timestamppb.Now(), timestamppb.Now(), fmt.Errorf("get user error"), nil},
-		{"failure create event error", false, context.Background(), "title", "description", timestamppb.Now(), timestamppb.Now(), nil, fmt.Errorf("create event error")},
+		{"success create event", true, context.Background(), "title", "description", timestamppb.Now(), timestamppb.Now(), func(s string) *string { return &s }("#FFFFFF"), nil, nil},
+		{"failure get user error", false, context.Background(), "title", "description", timestamppb.Now(), timestamppb.Now(), func(s string) *string { return &s }("#FFFFFF"), fmt.Errorf("get user error"), nil},
+		{"failure create event error", false, context.Background(), "title", "description", timestamppb.Now(), timestamppb.Now(), func(s string) *string { return &s }("#FFFFFF"), nil, fmt.Errorf("create event error")},
 	}
 	for _, tt := range tests {
 		tt := tt
@@ -48,12 +49,13 @@ func TestCreateEvent(t *testing.T) {
 			mockEvent := mocksevent.NewMockEvent(ctrl)
 			mockUserID := "mockUserID"
 			mockUserUsecase.EXPECT().GetUser(tt.ctx).Return(mockUserID, tt.getUserErr).AnyTimes()
-			mockEventUsecase.EXPECT().CreateEvent(mockUserID, tt.title, tt.description, tt.startTime, tt.endTime).Return(mockEvent, tt.createEventErr).AnyTimes()
+			mockEventUsecase.EXPECT().CreateEvent(mockUserID, tt.title, tt.description, tt.startTime, tt.endTime, *tt.color).Return(mockEvent, tt.createEventErr).AnyTimes()
 			mockEvent.EXPECT().ID().Return(event.NewEventID()).AnyTimes()
 			mockEvent.EXPECT().Title().Return(event.Title(tt.title)).AnyTimes()
 			mockEvent.EXPECT().Description().Return(event.Description(tt.description)).AnyTimes()
 			mockEvent.EXPECT().StartTime().Return(tt.startTime.AsTime()).AnyTimes()
 			mockEvent.EXPECT().EndTime().Return(tt.endTime.AsTime()).AnyTimes()
+			mockEvent.EXPECT().Color().Return(event.Color(*tt.color)).AnyTimes()
 
 			eventHandler := NewEventHandler(mockAuthUsecase, mockUserUsecase, mockEventUsecase)
 
@@ -62,6 +64,7 @@ func TestCreateEvent(t *testing.T) {
 				Description: tt.description,
 				StartTime:   tt.startTime,
 				EndTime:     tt.endTime,
+				Color:       tt.color,
 			}
 
 			_, err := eventHandler.CreateEvent(tt.ctx, req)
@@ -85,12 +88,13 @@ func TestUpdateEvent(t *testing.T) {
 		description    string
 		startTime      *timestamppb.Timestamp
 		endTime        *timestamppb.Timestamp
+		color          string
 		verifyTokenErr error
 		updateEventErr error
 	}{
-		{"success update event", true, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), nil, nil},
-		{"failure verify token error", false, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), fmt.Errorf("verify token error"), nil},
-		{"failure update event error", false, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), nil, fmt.Errorf("update event error")},
+		{"success update event", true, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), "#FFFFFF", nil, nil},
+		{"failure verify token error", false, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), "#FFFFFF", fmt.Errorf("verify token error"), nil},
+		{"failure update event error", false, context.Background(), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), "#FFFFFF", nil, fmt.Errorf("update event error")},
 	}
 	for _, tt := range tests {
 		tt := tt
@@ -105,12 +109,13 @@ func TestUpdateEvent(t *testing.T) {
 			mockEventUsecase := mocksappevent.NewMockEventUsecase(ctrl)
 			mockEvent := mocksevent.NewMockEvent(ctrl)
 			mockAuthUsecase.EXPECT().VerifyToken(tt.ctx).Return("user id", tt.verifyTokenErr).AnyTimes()
-			mockEventUsecase.EXPECT().UpdateEvent(tt.id, tt.title, tt.description, tt.startTime, tt.endTime).Return(mockEvent, tt.updateEventErr).AnyTimes()
+			mockEventUsecase.EXPECT().UpdateEvent(tt.id, tt.title, tt.description, tt.startTime, tt.endTime, tt.color).Return(mockEvent, tt.updateEventErr).AnyTimes()
 			mockEvent.EXPECT().ID().Return(event.NewEventID()).AnyTimes()
 			mockEvent.EXPECT().Title().Return(event.Title(tt.title)).AnyTimes()
 			mockEvent.EXPECT().Description().Return(event.Description(tt.description)).AnyTimes()
 			mockEvent.EXPECT().StartTime().Return(tt.startTime.AsTime()).AnyTimes()
 			mockEvent.EXPECT().EndTime().Return(tt.endTime.AsTime()).AnyTimes()
+			mockEvent.EXPECT().Color().Return(event.Color(tt.color)).AnyTimes()
 
 			eventHandler := NewEventHandler(mockAuthUsecase, mockUserUsecase, mockEventUsecase)
 
@@ -121,6 +126,7 @@ func TestUpdateEvent(t *testing.T) {
 					Description: tt.description,
 					StartTime:   tt.startTime,
 					EndTime:     tt.endTime,
+					Color:       tt.color,
 				},
 			}
 
@@ -168,6 +174,7 @@ func TestGetEvent(t *testing.T) {
 			mockEvent.EXPECT().Description().Return(event.Description("description")).AnyTimes()
 			mockEvent.EXPECT().StartTime().Return(time.Now()).AnyTimes()
 			mockEvent.EXPECT().EndTime().Return(time.Now()).AnyTimes()
+			mockEvent.EXPECT().Color().Return(event.Color("#FFFFFF")).AnyTimes()
 
 			eventHandler := NewEventHandler(mockAuthUsecase, mockUserUsecase, mockEventUsecase)
 
@@ -219,6 +226,7 @@ func TestListEvents(t *testing.T) {
 			mockEvent.EXPECT().Description().Return(event.Description("description")).AnyTimes()
 			mockEvent.EXPECT().StartTime().Return(time.Now()).AnyTimes()
 			mockEvent.EXPECT().EndTime().Return(time.Now()).AnyTimes()
+			mockEvent.EXPECT().Color().Return(event.Color("#FFFFFF")).AnyTimes()
 
 			eventHandler := NewEventHandler(mockAuthUsecase, mockUserUsecase, mockEventUsecase)
 

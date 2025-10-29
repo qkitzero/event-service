@@ -26,6 +26,7 @@ func (r *eventRepository) Create(e event.Event) error {
 			Description: e.Description(),
 			StartTime:   e.StartTime(),
 			EndTime:     e.EndTime(),
+			Color:       e.Color(),
 			CreatedAt:   e.CreatedAt(),
 			UpdatedAt:   e.UpdatedAt(),
 		}
@@ -47,6 +48,7 @@ func (r *eventRepository) Update(e event.Event) error {
 			Description: e.Description(),
 			StartTime:   e.StartTime(),
 			EndTime:     e.EndTime(),
+			Color:       e.Color(),
 			CreatedAt:   e.CreatedAt(),
 			UpdatedAt:   e.UpdatedAt(),
 		}
@@ -76,6 +78,7 @@ func (r *eventRepository) FindByID(id event.EventID) (event.Event, error) {
 		eventModel.Description,
 		eventModel.StartTime,
 		eventModel.EndTime,
+		eventModel.Color,
 		eventModel.CreatedAt,
 		eventModel.UpdatedAt,
 	)
@@ -98,6 +101,7 @@ func (r *eventRepository) ListByUserID(userID user.UserID) ([]event.Event, error
 			eventModel.Description,
 			eventModel.StartTime,
 			eventModel.EndTime,
+			eventModel.Color,
 			eventModel.CreatedAt,
 			eventModel.UpdatedAt,
 		)
