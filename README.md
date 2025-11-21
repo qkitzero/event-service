@@ -8,7 +8,7 @@
 - Microservices Architecture
 - gRPC
 - gRPC Gateway
-- Buf ([buf.build/qkitzero/event-service](https://buf.build/qkitzero/event-service))
+- Buf ([buf.build/qkitzero-org/event-service](https://buf.build/qkitzero-org/event-service))
 - Clean Architecture
 - Docker
 - Test
