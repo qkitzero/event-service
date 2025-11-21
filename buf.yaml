@@ -1,6 +1,6 @@
 version: v2
 modules:
   - path: proto
-    name: buf.build/qkitzero/event-service
+    name: buf.build/qkitzero-org/event-service
 deps:
   - buf.build/googleapis/googleapis
