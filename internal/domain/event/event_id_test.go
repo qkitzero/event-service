@@ -2,6 +2,8 @@ package event
 
 import (
 	"testing"
+
+	"github.com/google/uuid"
 )
 
 func TestNewEventID(t *testing.T) {
@@ -18,8 +20,8 @@ func TestNewEventID(t *testing.T) {
 			t.Parallel()
 
 			id := NewEventID()
-			if tt.success && id.String() == "" {
-				t.Errorf("expected valid event id string, but got empty string")
+			if tt.success && id.UUID == uuid.Nil {
+				t.Errorf("expected valid event id, but got a nil UUID")
 			}
 		})
 	}

@@ -42,17 +42,17 @@ func (m *MockEventRepository) EXPECT() *MockEventRepositoryMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockEventRepository) Create(event event.Event) error {
+func (m *MockEventRepository) Create(arg0 event.Event) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", event)
+	ret := m.ctrl.Call(m, "Create", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockEventRepositoryMockRecorder) Create(event any) *gomock.Call {
+func (mr *MockEventRepositoryMockRecorder) Create(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockEventRepository)(nil).Create), event)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockEventRepository)(nil).Create), arg0)
 }
 
 // Delete mocks base method.
@@ -100,15 +100,15 @@ func (mr *MockEventRepositoryMockRecorder) ListByUserID(userID any) *gomock.Call
 }
 
 // Update mocks base method.
-func (m *MockEventRepository) Update(event event.Event) error {
+func (m *MockEventRepository) Update(arg0 event.Event) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", event)
+	ret := m.ctrl.Call(m, "Update", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockEventRepositoryMockRecorder) Update(event any) *gomock.Call {
+func (mr *MockEventRepositoryMockRecorder) Update(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockEventRepository)(nil).Update), event)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockEventRepository)(nil).Update), arg0)
 }
