@@ -150,14 +150,14 @@ func TestGetEvent(t *testing.T) {
 func TestListEvents(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
-		name            string
-		success         bool
-		userID          string
-		listByUserIDErr error
+		name               string
+		success            bool
+		userID             string
+		findAllByUserIDErr error
 	}{
 		{"success list events", true, "6d322c66-bf4d-427a-970c-874f3745f653", nil},
 		{"failure empty user id", false, "", nil},
-		{"failure list by user id error", false, "6d322c66-bf4d-427a-970c-874f3745f653", errors.New("list by user id error")},
+		{"failure list by user id error", false, "6d322c66-bf4d-427a-970c-874f3745f653", errors.New("find all by user id error")},
 	}
 	for _, tt := range tests {
 		tt := tt
@@ -169,7 +169,7 @@ func TestListEvents(t *testing.T) {
 
 			mockEvent := mocks.NewMockEvent(ctrl)
 			mockEventRepository := mocks.NewMockEventRepository(ctrl)
-			mockEventRepository.EXPECT().ListByUserID(gomock.Any()).Return([]event.Event{mockEvent}, tt.listByUserIDErr).AnyTimes()
+			mockEventRepository.EXPECT().FindAllByUserID(gomock.Any()).Return([]event.Event{mockEvent}, tt.findAllByUserIDErr).AnyTimes()
 
 			eventUsecase := NewEventUsecase(mockEventRepository)
 

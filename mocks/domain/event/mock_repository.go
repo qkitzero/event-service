@@ -69,6 +69,21 @@ func (mr *MockEventRepositoryMockRecorder) Delete(id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockEventRepository)(nil).Delete), id)
 }
 
+// FindAllByUserID mocks base method.
+func (m *MockEventRepository) FindAllByUserID(userID user.UserID) ([]event.Event, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindAllByUserID", userID)
+	ret0, _ := ret[0].([]event.Event)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindAllByUserID indicates an expected call of FindAllByUserID.
+func (mr *MockEventRepositoryMockRecorder) FindAllByUserID(userID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAllByUserID", reflect.TypeOf((*MockEventRepository)(nil).FindAllByUserID), userID)
+}
+
 // FindByID mocks base method.
 func (m *MockEventRepository) FindByID(id event.EventID) (event.Event, error) {
 	m.ctrl.T.Helper()
@@ -82,21 +97,6 @@ func (m *MockEventRepository) FindByID(id event.EventID) (event.Event, error) {
 func (mr *MockEventRepositoryMockRecorder) FindByID(id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockEventRepository)(nil).FindByID), id)
-}
-
-// ListByUserID mocks base method.
-func (m *MockEventRepository) ListByUserID(userID user.UserID) ([]event.Event, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListByUserID", userID)
-	ret0, _ := ret[0].([]event.Event)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListByUserID indicates an expected call of ListByUserID.
-func (mr *MockEventRepositoryMockRecorder) ListByUserID(userID any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByUserID", reflect.TypeOf((*MockEventRepository)(nil).ListByUserID), userID)
 }
 
 // Update mocks base method.
