@@ -157,7 +157,7 @@ func TestListEvents(t *testing.T) {
 	}{
 		{"success list events", true, "6d322c66-bf4d-427a-970c-874f3745f653", nil},
 		{"failure empty user id", false, "", nil},
-		{"failure list by user id error", false, "6d322c66-bf4d-427a-970c-874f3745f653", errors.New("find all by user id error")},
+		{"failure find all by user id error", false, "6d322c66-bf4d-427a-970c-874f3745f653", errors.New("find all by user id error")},
 	}
 	for _, tt := range tests {
 		tt := tt
