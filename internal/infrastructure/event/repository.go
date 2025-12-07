@@ -86,7 +86,7 @@ func (r *eventRepository) FindByID(id event.EventID) (event.Event, error) {
 	return e, nil
 }
 
-func (r *eventRepository) ListByUserID(userID user.UserID) ([]event.Event, error) {
+func (r *eventRepository) FindAllByUserID(userID user.UserID) ([]event.Event, error) {
 	var eventModels []EventModel
 	if err := r.db.Where("user_id = ?", userID).Order("start_time asc, end_time asc").Find(&eventModels).Error; err != nil {
 		return nil, err

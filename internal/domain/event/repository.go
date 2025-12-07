@@ -6,6 +6,6 @@ type EventRepository interface {
 	Create(event Event) error
 	Update(event Event) error
 	FindByID(id EventID) (Event, error)
-	ListByUserID(userID user.UserID) ([]Event, error)
+	FindAllByUserID(userID user.UserID) ([]Event, error)
 	Delete(id EventID) error
 }

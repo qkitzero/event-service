@@ -130,7 +130,7 @@ func (s *eventUsecase) ListEvents(userID string) ([]event.Event, error) {
 		return nil, err
 	}
 
-	events, err := s.repo.ListByUserID(uid)
+	events, err := s.repo.FindAllByUserID(uid)
 	if err != nil {
 		return nil, err
 	}
