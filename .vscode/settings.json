@@ -1,7 +1,0 @@
-{
-    "protoc": {
-        "options": [
-            "--proto_path=google/api/annotations.proto"
-        ]
-    }
-}
