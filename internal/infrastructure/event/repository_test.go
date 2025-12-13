@@ -260,7 +260,7 @@ func TestFindByID(t *testing.T) {
 	}
 }
 
-func TestListByUserID(t *testing.T) {
+func TestFindAllByUserID(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
 		name    string
@@ -269,7 +269,7 @@ func TestListByUserID(t *testing.T) {
 		setup   func(mock sqlmock.Sqlmock, userID user.UserID)
 	}{
 		{
-			name:    "success list by user id",
+			name:    "success find all by user id",
 			success: true,
 			userID:  user.UserID{UUID: uuid.New()},
 			setup: func(mock sqlmock.Sqlmock, userID user.UserID) {
@@ -313,7 +313,7 @@ func TestListByUserID(t *testing.T) {
 
 			repo := NewEventRepository(gormDB)
 
-			_, err = repo.ListByUserID(tt.userID)
+			_, err = repo.FindAllByUserID(tt.userID)
 			if tt.success && err != nil {
 				t.Errorf("expected no error, but got %v", err)
 			}
