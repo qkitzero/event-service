@@ -46,6 +46,7 @@ flowchart TD
     subgraph external[External]
         event_db[(Event DB)]
         user_service(User Service)
+        auth_service(Auth Service)
     end
 
     build_event_service --> push_event_service --> event_service_image
@@ -60,4 +61,5 @@ flowchart TD
     event_service_gateway --> event_service
     event_service --> event_db
     event_service --> user_service
+    event_service --> auth_service
 ```
