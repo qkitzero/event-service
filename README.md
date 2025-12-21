@@ -34,7 +34,7 @@ classDiagram
     class UserID {
     }
 
-     Event "1" -- "1" UserID : has
+     Event "*" -- "1" UserID : has
 ```
 
 ```mermaid
