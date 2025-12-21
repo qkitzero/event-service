@@ -17,6 +17,27 @@
 - Cloud Run
 
 ```mermaid
+classDiagram
+    direction LR
+
+    class Event {
+        id
+        title
+        description
+        startTime
+        endTime
+        color
+        createdAt
+        updatedAt
+    }
+
+    class UserID {
+    }
+
+     Event "*" -- "1" UserID : has
+```
+
+```mermaid
 flowchart TD
     subgraph gcp[GCP]
         secret_manager[Secret Manager]
