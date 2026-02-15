@@ -61,9 +61,9 @@ func TestGetUser(t *testing.T) {
 			}
 			mockClient.EXPECT().GetUser(gomock.Any(), gomock.Any()).Return(mockGetUserResponse, tt.getUserErr).AnyTimes()
 
-			userUsecase := NewUserUsecase(mockClient)
+			userService := NewUserService(mockClient)
 
-			_, err := userUsecase.GetUser(tt.ctx)
+			_, err := userService.GetUser(tt.ctx)
 			if tt.success && err != nil {
 				t.Errorf("expected no error, but got %v", err)
 			}

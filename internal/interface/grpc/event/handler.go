@@ -4,38 +4,23 @@ import (
 	"context"
 
 	eventv1 "github.com/qkitzero/event-service/gen/go/event/v1"
-	appauth "github.com/qkitzero/event-service/internal/application/auth"
 	appevent "github.com/qkitzero/event-service/internal/application/event"
-	appuser "github.com/qkitzero/event-service/internal/application/user"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type EventHandler struct {
 	eventv1.UnimplementedEventServiceServer
-	authUsecase  appauth.AuthUsecase
-	userUsecase  appuser.UserUsecase
 	eventUsecase appevent.EventUsecase
 }
 
-func NewEventHandler(
-	authUsecase appauth.AuthUsecase,
-	userUsecase appuser.UserUsecase,
-	eventUsecase appevent.EventUsecase,
-) *EventHandler {
+func NewEventHandler(eventUsecase appevent.EventUsecase) *EventHandler {
 	return &EventHandler{
-		authUsecase:  authUsecase,
-		userUsecase:  userUsecase,
 		eventUsecase: eventUsecase,
 	}
 }
 
 func (h *EventHandler) CreateEvent(ctx context.Context, req *eventv1.CreateEventRequest) (*eventv1.CreateEventResponse, error) {
-	userID, err := h.userUsecase.GetUser(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	event, err := h.eventUsecase.CreateEvent(userID, req.GetTitle(), req.GetDescription(), req.GetStartTime(), req.GetEndTime(), req.GetColor())
+	event, err := h.eventUsecase.CreateEvent(ctx, req.GetTitle(), req.GetDescription(), req.GetStartTime(), req.GetEndTime(), req.GetColor())
 	if err != nil {
 		return nil, err
 	}
@@ -53,12 +38,7 @@ func (h *EventHandler) CreateEvent(ctx context.Context, req *eventv1.CreateEvent
 }
 
 func (h *EventHandler) UpdateEvent(ctx context.Context, req *eventv1.UpdateEventRequest) (*eventv1.UpdateEventResponse, error) {
-	_, err := h.authUsecase.VerifyToken(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	event, err := h.eventUsecase.UpdateEvent(req.GetEvent().GetId(), req.GetEvent().GetTitle(), req.GetEvent().GetDescription(), req.GetEvent().GetStartTime(), req.GetEvent().GetEndTime(), req.GetEvent().GetColor())
+	event, err := h.eventUsecase.UpdateEvent(ctx, req.GetEvent().GetId(), req.GetEvent().GetTitle(), req.GetEvent().GetDescription(), req.GetEvent().GetStartTime(), req.GetEvent().GetEndTime(), req.GetEvent().GetColor())
 	if err != nil {
 		return nil, err
 	}
@@ -76,12 +56,7 @@ func (h *EventHandler) UpdateEvent(ctx context.Context, req *eventv1.UpdateEvent
 }
 
 func (h *EventHandler) GetEvent(ctx context.Context, req *eventv1.GetEventRequest) (*eventv1.GetEventResponse, error) {
-	_, err := h.authUsecase.VerifyToken(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	event, err := h.eventUsecase.GetEvent(req.GetId())
+	event, err := h.eventUsecase.GetEvent(ctx, req.GetId())
 	if err != nil {
 		return nil, err
 	}
@@ -99,12 +74,7 @@ func (h *EventHandler) GetEvent(ctx context.Context, req *eventv1.GetEventReques
 }
 
 func (h *EventHandler) ListEvents(ctx context.Context, req *eventv1.ListEventsRequest) (*eventv1.ListEventsResponse, error) {
-	userID, err := h.userUsecase.GetUser(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	events, err := h.eventUsecase.ListEvents(userID)
+	events, err := h.eventUsecase.ListEvents(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -128,12 +98,7 @@ func (h *EventHandler) ListEvents(ctx context.Context, req *eventv1.ListEventsRe
 }
 
 func (h *EventHandler) DeleteEvent(ctx context.Context, req *eventv1.DeleteEventRequest) (*eventv1.DeleteEventResponse, error) {
-	_, err := h.authUsecase.VerifyToken(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := h.eventUsecase.DeleteEvent(req.GetId()); err != nil {
+	if err := h.eventUsecase.DeleteEvent(ctx, req.GetId()); err != nil {
 		return nil, err
 	}
 

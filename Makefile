@@ -15,8 +15,8 @@ mock-gen:
 	$(MOCK_GEN) -source=internal/domain/event/event.go -destination=mocks/domain/event/mock_event.go -package=mocks
 	$(MOCK_GEN) -source=internal/domain/event/repository.go -destination=mocks/domain/event/mock_repository.go -package=mocks
 	$(MOCK_GEN) -source=internal/application/event/usecase.go -destination=mocks/application/event/mock_usecase.go -package=mocks
-	$(MOCK_GEN) -source=internal/application/auth/usecase.go -destination=mocks/application/auth/mock_usecase.go -package=mocks
-	$(MOCK_GEN) -source=internal/application/user/usecase.go -destination=mocks/application/user/mock_usecase.go -package=mocks
+	$(MOCK_GEN) -source=internal/application/auth/service.go -destination=mocks/application/auth/mock_service.go -package=mocks
+	$(MOCK_GEN) -source=internal/application/user/service.go -destination=mocks/application/user/mock_service.go -package=mocks
 	$(MOCK_GEN) -destination=mocks/external/auth/v1/mock_client.go -package=mocks github.com/qkitzero/auth-service/gen/go/auth/v1 AuthServiceClient
 	$(MOCK_GEN) -destination=mocks/external/user/v1/mock_client.go -package=mocks github.com/qkitzero/user-service/gen/go/user/v1 UserServiceClient
 

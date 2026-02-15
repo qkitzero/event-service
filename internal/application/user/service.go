@@ -2,6 +2,6 @@ package user
 
 import "context"
 
-type UserUsecase interface {
+type UserService interface {
 	GetUser(ctx context.Context) (string, error)
 }

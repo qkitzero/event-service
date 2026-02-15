@@ -9,15 +9,15 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-type userUsecase struct {
+type userService struct {
 	client userv1.UserServiceClient
 }
 
-func NewUserUsecase(client userv1.UserServiceClient) user.UserUsecase {
-	return &userUsecase{client: client}
+func NewUserService(client userv1.UserServiceClient) user.UserService {
+	return &userService{client: client}
 }
 
-func (s *userUsecase) GetUser(ctx context.Context) (string, error) {
+func (s *userService) GetUser(ctx context.Context) (string, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return "", errors.New("metadata is missing")
