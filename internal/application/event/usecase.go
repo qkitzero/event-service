@@ -1,32 +1,50 @@
 package event
 
 import (
+	"context"
 	"fmt"
 	"time"
 
+	"github.com/qkitzero/event-service/internal/application/auth"
+	"github.com/qkitzero/event-service/internal/application/user"
 	"github.com/qkitzero/event-service/internal/domain/event"
-	"github.com/qkitzero/event-service/internal/domain/user"
+	domainuser "github.com/qkitzero/event-service/internal/domain/user"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type EventUsecase interface {
-	CreateEvent(userID, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error)
-	UpdateEvent(eventID, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error)
-	GetEvent(eventID string) (event.Event, error)
-	ListEvents(userID string) ([]event.Event, error)
-	DeleteEvent(eventID string) error
+	CreateEvent(ctx context.Context, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error)
+	UpdateEvent(ctx context.Context, eventID, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error)
+	GetEvent(ctx context.Context, eventID string) (event.Event, error)
+	ListEvents(ctx context.Context) ([]event.Event, error)
+	DeleteEvent(ctx context.Context, eventID string) error
 }
 
 type eventUsecase struct {
-	repo event.EventRepository
+	authService auth.AuthService
+	userService user.UserService
+	eventRepo   event.EventRepository
 }
 
-func NewEventUsecase(repo event.EventRepository) EventUsecase {
-	return &eventUsecase{repo: repo}
+func NewEventUsecase(
+	authService auth.AuthService,
+	userService user.UserService,
+	eventRepo event.EventRepository,
+) EventUsecase {
+	return &eventUsecase{
+		authService: authService,
+		userService: userService,
+		eventRepo:   eventRepo,
+	}
 }
 
-func (s *eventUsecase) CreateEvent(userID, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error) {
-	newUserID, err := user.NewUserIDFromString(userID)
+func (s *eventUsecase) CreateEvent(ctx context.Context, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error) {
+	userID, err := s.userService.GetUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	newUserID, err := domainuser.NewUserIDFromString(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -58,20 +76,24 @@ func (s *eventUsecase) CreateEvent(userID, title, description string, startTime,
 
 	newEvent := event.NewEvent(event.NewEventID(), newUserID, newTitle, newDescription, newStartTime, newEndTime, newColor, time.Now(), time.Now())
 
-	if err := s.repo.Create(newEvent); err != nil {
+	if err := s.eventRepo.Create(newEvent); err != nil {
 		return nil, err
 	}
 
 	return newEvent, nil
 }
 
-func (s *eventUsecase) UpdateEvent(eventID, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error) {
+func (s *eventUsecase) UpdateEvent(ctx context.Context, eventID, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error) {
+	if _, err := s.authService.VerifyToken(ctx); err != nil {
+		return nil, err
+	}
+
 	id, err := event.NewEventIDFromString(eventID)
 	if err != nil {
 		return nil, err
 	}
 
-	foundEvent, err := s.repo.FindByID(id)
+	foundEvent, err := s.eventRepo.FindByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -103,20 +125,24 @@ func (s *eventUsecase) UpdateEvent(eventID, title, description string, startTime
 
 	foundEvent.Update(newTitle, newDescription, newStartTime, newEndTime, newColor)
 
-	if err := s.repo.Update(foundEvent); err != nil {
+	if err := s.eventRepo.Update(foundEvent); err != nil {
 		return nil, err
 	}
 
 	return foundEvent, nil
 }
 
-func (s *eventUsecase) GetEvent(eventID string) (event.Event, error) {
+func (s *eventUsecase) GetEvent(ctx context.Context, eventID string) (event.Event, error) {
+	if _, err := s.authService.VerifyToken(ctx); err != nil {
+		return nil, err
+	}
+
 	id, err := event.NewEventIDFromString(eventID)
 	if err != nil {
 		return nil, err
 	}
 
-	foundEvent, err := s.repo.FindByID(id)
+	foundEvent, err := s.eventRepo.FindByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -124,13 +150,18 @@ func (s *eventUsecase) GetEvent(eventID string) (event.Event, error) {
 	return foundEvent, nil
 }
 
-func (s *eventUsecase) ListEvents(userID string) ([]event.Event, error) {
-	uid, err := user.NewUserIDFromString(userID)
+func (s *eventUsecase) ListEvents(ctx context.Context) ([]event.Event, error) {
+	userID, err := s.userService.GetUser(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	events, err := s.repo.FindAllByUserID(uid)
+	uid, err := domainuser.NewUserIDFromString(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	events, err := s.eventRepo.FindAllByUserID(uid)
 	if err != nil {
 		return nil, err
 	}
@@ -138,13 +169,17 @@ func (s *eventUsecase) ListEvents(userID string) ([]event.Event, error) {
 	return events, nil
 }
 
-func (s *eventUsecase) DeleteEvent(eventID string) error {
+func (s *eventUsecase) DeleteEvent(ctx context.Context, eventID string) error {
+	if _, err := s.authService.VerifyToken(ctx); err != nil {
+		return err
+	}
+
 	id, err := event.NewEventIDFromString(eventID)
 	if err != nil {
 		return err
 	}
 
-	if err := s.repo.Delete(id); err != nil {
+	if err := s.eventRepo.Delete(id); err != nil {
 		return err
 	}
 
