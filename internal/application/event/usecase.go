@@ -2,7 +2,6 @@ package event
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/qkitzero/event-service/internal/application/user"
@@ -56,12 +55,12 @@ func (s *eventUsecase) CreateEvent(ctx context.Context, title, description strin
 	}
 
 	if startTime == nil {
-		return nil, fmt.Errorf("start time is required")
+		return nil, event.ErrStartTimeRequired
 	}
 	newStartTime := startTime.AsTime()
 
 	if endTime == nil {
-		return nil, fmt.Errorf("end time is required")
+		return nil, event.ErrEndTimeRequired
 	}
 	newEndTime := endTime.AsTime()
 
