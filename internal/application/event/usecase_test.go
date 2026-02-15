@@ -69,20 +69,20 @@ func TestCreateEvent(t *testing.T) {
 func TestUpdateEvent(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
-		name           string
-		success        bool
-		ctx            context.Context
-		eventOwnerID string
-		userID       string
-		getUserErr   error
-		eventID      string
-		title        string
-		description  string
-		startTime    *timestamppb.Timestamp
-		endTime      *timestamppb.Timestamp
-		color        string
-		findByIDErr  error
-		updateErr    error
+		name        string
+		success     bool
+		ctx         context.Context
+		eventUserID string
+		userID      string
+		getUserErr  error
+		eventID     string
+		title       string
+		description string
+		startTime   *timestamppb.Timestamp
+		endTime     *timestamppb.Timestamp
+		color       string
+		findByIDErr error
+		updateErr   error
 	}{
 		{"success update event", true, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), "#FFFFFF", nil, nil},
 		{"success update event with nil times", true, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", nil, nil, "#FFFFFF", nil, nil},
@@ -105,7 +105,7 @@ func TestUpdateEvent(t *testing.T) {
 
 			mockUserService := mocksuser.NewMockUserService(ctrl)
 			mockUserService.EXPECT().GetUser(tt.ctx).Return(tt.userID, tt.getUserErr).AnyTimes()
-			eventUserID, _ := domainuser.NewUserIDFromString(tt.eventOwnerID)
+			eventUserID, _ := domainuser.NewUserIDFromString(tt.eventUserID)
 			mockEvent := mocks.NewMockEvent(ctrl)
 			mockEvent.EXPECT().UserID().Return(eventUserID).AnyTimes()
 			mockEvent.EXPECT().StartTime().Return(time.Now()).AnyTimes()
@@ -131,14 +131,14 @@ func TestUpdateEvent(t *testing.T) {
 func TestGetEvent(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
-		name         string
-		success      bool
-		ctx          context.Context
-		eventOwnerID string
-		userID       string
-		getUserErr   error
-		eventID      string
-		findByIDErr  error
+		name        string
+		success     bool
+		ctx         context.Context
+		eventUserID string
+		userID      string
+		getUserErr  error
+		eventID     string
+		findByIDErr error
 	}{
 		{"success get event", true, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil},
 		{"failure get user error", false, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", errors.New("get user error"), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil},
@@ -156,7 +156,7 @@ func TestGetEvent(t *testing.T) {
 
 			mockUserService := mocksuser.NewMockUserService(ctrl)
 			mockUserService.EXPECT().GetUser(tt.ctx).Return(tt.userID, tt.getUserErr).AnyTimes()
-			eventUserID, _ := domainuser.NewUserIDFromString(tt.eventOwnerID)
+			eventUserID, _ := domainuser.NewUserIDFromString(tt.eventUserID)
 			mockEvent := mocks.NewMockEvent(ctrl)
 			mockEvent.EXPECT().UserID().Return(eventUserID).AnyTimes()
 			mockEventRepository := mocks.NewMockEventRepository(ctrl)
@@ -220,15 +220,15 @@ func TestListEvents(t *testing.T) {
 func TestDeleteEvent(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
-		name         string
-		success      bool
-		ctx          context.Context
-		eventOwnerID string
-		userID       string
-		getUserErr   error
-		eventID      string
-		findByIDErr  error
-		deleteErr    error
+		name        string
+		success     bool
+		ctx         context.Context
+		eventUserID string
+		userID      string
+		getUserErr  error
+		eventID     string
+		findByIDErr error
+		deleteErr   error
 	}{
 		{"success delete event", true, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil, nil},
 		{"failure get user error", false, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", errors.New("get user error"), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil, nil},
@@ -247,7 +247,7 @@ func TestDeleteEvent(t *testing.T) {
 
 			mockUserService := mocksuser.NewMockUserService(ctrl)
 			mockUserService.EXPECT().GetUser(tt.ctx).Return(tt.userID, tt.getUserErr).AnyTimes()
-			eventUserID, _ := domainuser.NewUserIDFromString(tt.eventOwnerID)
+			eventUserID, _ := domainuser.NewUserIDFromString(tt.eventUserID)
 			mockEvent := mocks.NewMockEvent(ctrl)
 			mockEvent.EXPECT().UserID().Return(eventUserID).AnyTimes()
 			mockEventRepository := mocks.NewMockEventRepository(ctrl)
