@@ -84,7 +84,8 @@ func (s *eventUsecase) CreateEvent(ctx context.Context, title, description strin
 }
 
 func (s *eventUsecase) UpdateEvent(ctx context.Context, eventID, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error) {
-	if _, err := s.authService.VerifyToken(ctx); err != nil {
+	userID, err := s.userService.GetUser(ctx)
+	if err != nil {
 		return nil, err
 	}
 
@@ -96,6 +97,10 @@ func (s *eventUsecase) UpdateEvent(ctx context.Context, eventID, title, descript
 	foundEvent, err := s.eventRepo.FindByID(id)
 	if err != nil {
 		return nil, err
+	}
+
+	if foundEvent.UserID().String() != userID {
+		return nil, fmt.Errorf("permission denied: user does not own this event")
 	}
 
 	newTitle, err := event.NewTitle(title)
@@ -133,7 +138,8 @@ func (s *eventUsecase) UpdateEvent(ctx context.Context, eventID, title, descript
 }
 
 func (s *eventUsecase) GetEvent(ctx context.Context, eventID string) (event.Event, error) {
-	if _, err := s.authService.VerifyToken(ctx); err != nil {
+	userID, err := s.userService.GetUser(ctx)
+	if err != nil {
 		return nil, err
 	}
 
@@ -145,6 +151,10 @@ func (s *eventUsecase) GetEvent(ctx context.Context, eventID string) (event.Even
 	foundEvent, err := s.eventRepo.FindByID(id)
 	if err != nil {
 		return nil, err
+	}
+
+	if foundEvent.UserID().String() != userID {
+		return nil, fmt.Errorf("permission denied: user does not own this event")
 	}
 
 	return foundEvent, nil
@@ -170,13 +180,23 @@ func (s *eventUsecase) ListEvents(ctx context.Context) ([]event.Event, error) {
 }
 
 func (s *eventUsecase) DeleteEvent(ctx context.Context, eventID string) error {
-	if _, err := s.authService.VerifyToken(ctx); err != nil {
+	userID, err := s.userService.GetUser(ctx)
+	if err != nil {
 		return err
 	}
 
 	id, err := event.NewEventIDFromString(eventID)
 	if err != nil {
 		return err
+	}
+
+	foundEvent, err := s.eventRepo.FindByID(id)
+	if err != nil {
+		return err
+	}
+
+	if foundEvent.UserID().String() != userID {
+		return fmt.Errorf("permission denied: user does not own this event")
 	}
 
 	if err := s.eventRepo.Delete(id); err != nil {

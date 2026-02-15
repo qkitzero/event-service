@@ -10,6 +10,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/qkitzero/event-service/internal/domain/event"
+	domainuser "github.com/qkitzero/event-service/internal/domain/user"
 	mocksauth "github.com/qkitzero/event-service/mocks/application/auth"
 	mocksuser "github.com/qkitzero/event-service/mocks/application/user"
 	mocks "github.com/qkitzero/event-service/mocks/domain/event"
@@ -73,25 +74,28 @@ func TestUpdateEvent(t *testing.T) {
 		name           string
 		success        bool
 		ctx            context.Context
-		verifyTokenErr error
-		eventID        string
-		title          string
-		description    string
-		startTime      *timestamppb.Timestamp
-		endTime        *timestamppb.Timestamp
-		color          string
-		findByIDErr    error
-		updateErr      error
+		eventOwnerID string
+		userID       string
+		getUserErr   error
+		eventID      string
+		title        string
+		description  string
+		startTime    *timestamppb.Timestamp
+		endTime      *timestamppb.Timestamp
+		color        string
+		findByIDErr  error
+		updateErr    error
 	}{
-		{"success update event", true, context.Background(), nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), "#FFFFFF", nil, nil},
-		{"success update event with nil times", true, context.Background(), nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", nil, nil, "#FFFFFF", nil, nil},
-		{"failure verify token error", false, context.Background(), errors.New("verify token error"), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), "#FFFFFF", nil, nil},
-		{"failure empty event id", false, context.Background(), nil, "", "title", "description", timestamppb.Now(), timestamppb.Now(), "#FFFFFF", nil, nil},
-		{"failure empty title", false, context.Background(), nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "", "description", timestamppb.Now(), timestamppb.Now(), "#FFFFFF", nil, nil},
-		{"failure empty description", false, context.Background(), nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "", timestamppb.Now(), timestamppb.Now(), "#FFFFFF", nil, nil},
-		{"failure invalid color", false, context.Background(), nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), "red", nil, nil},
-		{"failure find by id error", false, context.Background(), nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), "#FFFFFF", errors.New("find by id error"), nil},
-		{"failure update error", false, context.Background(), nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), "#FFFFFF", nil, errors.New("update error")},
+		{"success update event", true, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), "#FFFFFF", nil, nil},
+		{"success update event with nil times", true, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", nil, nil, "#FFFFFF", nil, nil},
+		{"failure get user error", false, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", errors.New("get user error"), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), "#FFFFFF", nil, nil},
+		{"failure permission denied", false, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "00000000-0000-0000-0000-000000000001", nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), "#FFFFFF", nil, nil},
+		{"failure empty event id", false, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", nil, "", "title", "description", timestamppb.Now(), timestamppb.Now(), "#FFFFFF", nil, nil},
+		{"failure empty title", false, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "", "description", timestamppb.Now(), timestamppb.Now(), "#FFFFFF", nil, nil},
+		{"failure empty description", false, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "", timestamppb.Now(), timestamppb.Now(), "#FFFFFF", nil, nil},
+		{"failure invalid color", false, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), "red", nil, nil},
+		{"failure find by id error", false, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), "#FFFFFF", errors.New("find by id error"), nil},
+		{"failure update error", false, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", "title", "description", timestamppb.Now(), timestamppb.Now(), "#FFFFFF", nil, errors.New("update error")},
 	}
 	for _, tt := range tests {
 		tt := tt
@@ -103,8 +107,10 @@ func TestUpdateEvent(t *testing.T) {
 
 			mockAuthService := mocksauth.NewMockAuthService(ctrl)
 			mockUserService := mocksuser.NewMockUserService(ctrl)
-			mockAuthService.EXPECT().VerifyToken(tt.ctx).Return("user id", tt.verifyTokenErr).AnyTimes()
+			mockUserService.EXPECT().GetUser(tt.ctx).Return(tt.userID, tt.getUserErr).AnyTimes()
+			eventUserID, _ := domainuser.NewUserIDFromString(tt.eventOwnerID)
 			mockEvent := mocks.NewMockEvent(ctrl)
+			mockEvent.EXPECT().UserID().Return(eventUserID).AnyTimes()
 			mockEvent.EXPECT().StartTime().Return(time.Now()).AnyTimes()
 			mockEvent.EXPECT().EndTime().Return(time.Now()).AnyTimes()
 			mockEvent.EXPECT().Update(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return().AnyTimes()
@@ -128,17 +134,20 @@ func TestUpdateEvent(t *testing.T) {
 func TestGetEvent(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
-		name           string
-		success        bool
-		ctx            context.Context
-		verifyTokenErr error
-		eventID        string
-		findByIDErr    error
+		name         string
+		success      bool
+		ctx          context.Context
+		eventOwnerID string
+		userID       string
+		getUserErr   error
+		eventID      string
+		findByIDErr  error
 	}{
-		{"success get event", true, context.Background(), nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil},
-		{"failure verify token error", false, context.Background(), errors.New("verify token error"), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil},
-		{"failure empty event id", false, context.Background(), nil, "", nil},
-		{"failure find by id error", false, context.Background(), nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", errors.New("find by id error")},
+		{"success get event", true, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil},
+		{"failure get user error", false, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", errors.New("get user error"), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil},
+		{"failure permission denied", false, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "00000000-0000-0000-0000-000000000001", nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil},
+		{"failure empty event id", false, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", nil, "", nil},
+		{"failure find by id error", false, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", errors.New("find by id error")},
 	}
 	for _, tt := range tests {
 		tt := tt
@@ -150,8 +159,10 @@ func TestGetEvent(t *testing.T) {
 
 			mockAuthService := mocksauth.NewMockAuthService(ctrl)
 			mockUserService := mocksuser.NewMockUserService(ctrl)
-			mockAuthService.EXPECT().VerifyToken(tt.ctx).Return("user id", tt.verifyTokenErr).AnyTimes()
+			mockUserService.EXPECT().GetUser(tt.ctx).Return(tt.userID, tt.getUserErr).AnyTimes()
+			eventUserID, _ := domainuser.NewUserIDFromString(tt.eventOwnerID)
 			mockEvent := mocks.NewMockEvent(ctrl)
+			mockEvent.EXPECT().UserID().Return(eventUserID).AnyTimes()
 			mockEventRepository := mocks.NewMockEventRepository(ctrl)
 			mockEventRepository.EXPECT().FindByID(gomock.Any()).Return(mockEvent, tt.findByIDErr).AnyTimes()
 
@@ -214,17 +225,22 @@ func TestListEvents(t *testing.T) {
 func TestDeleteEvent(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
-		name           string
-		success        bool
-		ctx            context.Context
-		verifyTokenErr error
-		eventID        string
-		deleteErr      error
+		name         string
+		success      bool
+		ctx          context.Context
+		eventOwnerID string
+		userID       string
+		getUserErr   error
+		eventID      string
+		findByIDErr  error
+		deleteErr    error
 	}{
-		{"success delete event", true, context.Background(), nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil},
-		{"failure verify token error", false, context.Background(), errors.New("verify token error"), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil},
-		{"failure empty event id", false, context.Background(), nil, "", nil},
-		{"failure delete error", false, context.Background(), nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", errors.New("delete error")},
+		{"success delete event", true, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil, nil},
+		{"failure get user error", false, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", errors.New("get user error"), "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil, nil},
+		{"failure permission denied", false, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "00000000-0000-0000-0000-000000000001", nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil, nil},
+		{"failure empty event id", false, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", nil, "", nil, nil},
+		{"failure find by id error", false, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", errors.New("find by id error"), nil},
+		{"failure delete error", false, context.Background(), "6d322c66-bf4d-427a-970c-874f3745f653", "6d322c66-bf4d-427a-970c-874f3745f653", nil, "fe8c2263-bbac-4bb9-a41d-b04f5afc4425", nil, errors.New("delete error")},
 	}
 	for _, tt := range tests {
 		tt := tt
@@ -236,8 +252,12 @@ func TestDeleteEvent(t *testing.T) {
 
 			mockAuthService := mocksauth.NewMockAuthService(ctrl)
 			mockUserService := mocksuser.NewMockUserService(ctrl)
-			mockAuthService.EXPECT().VerifyToken(tt.ctx).Return("user id", tt.verifyTokenErr).AnyTimes()
+			mockUserService.EXPECT().GetUser(tt.ctx).Return(tt.userID, tt.getUserErr).AnyTimes()
+			eventUserID, _ := domainuser.NewUserIDFromString(tt.eventOwnerID)
+			mockEvent := mocks.NewMockEvent(ctrl)
+			mockEvent.EXPECT().UserID().Return(eventUserID).AnyTimes()
 			mockEventRepository := mocks.NewMockEventRepository(ctrl)
+			mockEventRepository.EXPECT().FindByID(gomock.Any()).Return(mockEvent, tt.findByIDErr).AnyTimes()
 			mockEventRepository.EXPECT().Delete(gomock.Any()).Return(tt.deleteErr).AnyTimes()
 
 			eventUsecase := NewEventUsecase(mockAuthService, mockUserService, mockEventRepository)
