@@ -70,12 +70,12 @@ func main() {
 	userServiceClient := userv1.NewUserServiceClient(userConn)
 	eventRepository := infraevent.NewEventRepository(db)
 
-	authUsecase := apiauth.NewAuthUsecase(authServiceClient)
-	userUsecase := apiuser.NewUserUsecase(userServiceClient)
-	eventUsecase := appevent.NewEventUsecase(eventRepository)
+	_ = apiauth.NewAuthService(authServiceClient)
+	userService := apiuser.NewUserService(userServiceClient)
+	eventUsecase := appevent.NewEventUsecase(userService, eventRepository)
 
 	healthServer := health.NewServer()
-	eventHandler := grpcevent.NewEventHandler(authUsecase, userUsecase, eventUsecase)
+	eventHandler := grpcevent.NewEventHandler(eventUsecase)
 
 	grpc_health_v1.RegisterHealthServer(server, healthServer)
 	eventv1.RegisterEventServiceServer(server, eventHandler)
