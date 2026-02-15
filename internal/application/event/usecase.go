@@ -96,7 +96,7 @@ func (s *eventUsecase) UpdateEvent(ctx context.Context, eventID, title, descript
 	}
 
 	if foundEvent.UserID().String() != userID {
-		return nil, fmt.Errorf("permission denied: user does not own this event")
+		return nil, event.ErrPermissionDenied
 	}
 
 	newTitle, err := event.NewTitle(title)
@@ -150,7 +150,7 @@ func (s *eventUsecase) GetEvent(ctx context.Context, eventID string) (event.Even
 	}
 
 	if foundEvent.UserID().String() != userID {
-		return nil, fmt.Errorf("permission denied: user does not own this event")
+		return nil, event.ErrPermissionDenied
 	}
 
 	return foundEvent, nil
@@ -192,7 +192,7 @@ func (s *eventUsecase) DeleteEvent(ctx context.Context, eventID string) error {
 	}
 
 	if foundEvent.UserID().String() != userID {
-		return fmt.Errorf("permission denied: user does not own this event")
+		return event.ErrPermissionDenied
 	}
 
 	if err := s.eventRepo.Delete(id); err != nil {
