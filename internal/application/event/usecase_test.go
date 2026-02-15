@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -105,9 +106,8 @@ func TestUpdateEvent(t *testing.T) {
 
 			mockUserService := mocksuser.NewMockUserService(ctrl)
 			mockUserService.EXPECT().GetUser(tt.ctx).Return(tt.userID, tt.getUserErr).AnyTimes()
-			eventUserID, _ := domainuser.NewUserIDFromString(tt.eventUserID)
 			mockEvent := mocks.NewMockEvent(ctrl)
-			mockEvent.EXPECT().UserID().Return(eventUserID).AnyTimes()
+			mockEvent.EXPECT().UserID().Return(domainuser.UserID{UUID: uuid.MustParse(tt.eventUserID)}).AnyTimes()
 			mockEvent.EXPECT().StartTime().Return(time.Now()).AnyTimes()
 			mockEvent.EXPECT().EndTime().Return(time.Now()).AnyTimes()
 			mockEvent.EXPECT().Update(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return().AnyTimes()
@@ -156,9 +156,8 @@ func TestGetEvent(t *testing.T) {
 
 			mockUserService := mocksuser.NewMockUserService(ctrl)
 			mockUserService.EXPECT().GetUser(tt.ctx).Return(tt.userID, tt.getUserErr).AnyTimes()
-			eventUserID, _ := domainuser.NewUserIDFromString(tt.eventUserID)
 			mockEvent := mocks.NewMockEvent(ctrl)
-			mockEvent.EXPECT().UserID().Return(eventUserID).AnyTimes()
+			mockEvent.EXPECT().UserID().Return(domainuser.UserID{UUID: uuid.MustParse(tt.eventUserID)}).AnyTimes()
 			mockEventRepository := mocks.NewMockEventRepository(ctrl)
 			mockEventRepository.EXPECT().FindByID(gomock.Any()).Return(mockEvent, tt.findByIDErr).AnyTimes()
 
@@ -247,9 +246,8 @@ func TestDeleteEvent(t *testing.T) {
 
 			mockUserService := mocksuser.NewMockUserService(ctrl)
 			mockUserService.EXPECT().GetUser(tt.ctx).Return(tt.userID, tt.getUserErr).AnyTimes()
-			eventUserID, _ := domainuser.NewUserIDFromString(tt.eventUserID)
 			mockEvent := mocks.NewMockEvent(ctrl)
-			mockEvent.EXPECT().UserID().Return(eventUserID).AnyTimes()
+			mockEvent.EXPECT().UserID().Return(domainuser.UserID{UUID: uuid.MustParse(tt.eventUserID)}).AnyTimes()
 			mockEventRepository := mocks.NewMockEventRepository(ctrl)
 			mockEventRepository.EXPECT().FindByID(gomock.Any()).Return(mockEvent, tt.findByIDErr).AnyTimes()
 			mockEventRepository.EXPECT().Delete(gomock.Any()).Return(tt.deleteErr).AnyTimes()
