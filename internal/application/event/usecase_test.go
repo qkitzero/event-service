@@ -11,7 +11,6 @@ import (
 
 	"github.com/qkitzero/event-service/internal/domain/event"
 	domainuser "github.com/qkitzero/event-service/internal/domain/user"
-	mocksauth "github.com/qkitzero/event-service/mocks/application/auth"
 	mocksuser "github.com/qkitzero/event-service/mocks/application/user"
 	mocks "github.com/qkitzero/event-service/mocks/domain/event"
 )
@@ -49,13 +48,12 @@ func TestCreateEvent(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			mockAuthService := mocksauth.NewMockAuthService(ctrl)
 			mockUserService := mocksuser.NewMockUserService(ctrl)
 			mockEventRepository := mocks.NewMockEventRepository(ctrl)
 			mockUserService.EXPECT().GetUser(tt.ctx).Return(tt.userID, tt.getUserErr).AnyTimes()
 			mockEventRepository.EXPECT().Create(gomock.Any()).Return(tt.createErr).AnyTimes()
 
-			eventUsecase := NewEventUsecase(mockAuthService, mockUserService, mockEventRepository)
+			eventUsecase := NewEventUsecase(mockUserService, mockEventRepository)
 
 			_, err := eventUsecase.CreateEvent(tt.ctx, tt.title, tt.description, tt.startTime, tt.endTime, tt.color)
 			if tt.success && err != nil {
@@ -105,7 +103,6 @@ func TestUpdateEvent(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			mockAuthService := mocksauth.NewMockAuthService(ctrl)
 			mockUserService := mocksuser.NewMockUserService(ctrl)
 			mockUserService.EXPECT().GetUser(tt.ctx).Return(tt.userID, tt.getUserErr).AnyTimes()
 			eventUserID, _ := domainuser.NewUserIDFromString(tt.eventOwnerID)
@@ -118,7 +115,7 @@ func TestUpdateEvent(t *testing.T) {
 			mockEventRepository.EXPECT().FindByID(gomock.Any()).Return(mockEvent, tt.findByIDErr).AnyTimes()
 			mockEventRepository.EXPECT().Update(gomock.Any()).Return(tt.updateErr).AnyTimes()
 
-			eventUsecase := NewEventUsecase(mockAuthService, mockUserService, mockEventRepository)
+			eventUsecase := NewEventUsecase(mockUserService, mockEventRepository)
 
 			_, err := eventUsecase.UpdateEvent(tt.ctx, tt.eventID, tt.title, tt.description, tt.startTime, tt.endTime, tt.color)
 			if tt.success && err != nil {
@@ -157,7 +154,6 @@ func TestGetEvent(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			mockAuthService := mocksauth.NewMockAuthService(ctrl)
 			mockUserService := mocksuser.NewMockUserService(ctrl)
 			mockUserService.EXPECT().GetUser(tt.ctx).Return(tt.userID, tt.getUserErr).AnyTimes()
 			eventUserID, _ := domainuser.NewUserIDFromString(tt.eventOwnerID)
@@ -166,7 +162,7 @@ func TestGetEvent(t *testing.T) {
 			mockEventRepository := mocks.NewMockEventRepository(ctrl)
 			mockEventRepository.EXPECT().FindByID(gomock.Any()).Return(mockEvent, tt.findByIDErr).AnyTimes()
 
-			eventUsecase := NewEventUsecase(mockAuthService, mockUserService, mockEventRepository)
+			eventUsecase := NewEventUsecase(mockUserService, mockEventRepository)
 
 			_, err := eventUsecase.GetEvent(tt.ctx, tt.eventID)
 			if tt.success && err != nil {
@@ -202,14 +198,13 @@ func TestListEvents(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			mockAuthService := mocksauth.NewMockAuthService(ctrl)
 			mockUserService := mocksuser.NewMockUserService(ctrl)
 			mockUserService.EXPECT().GetUser(tt.ctx).Return(tt.userID, tt.getUserErr).AnyTimes()
 			mockEvent := mocks.NewMockEvent(ctrl)
 			mockEventRepository := mocks.NewMockEventRepository(ctrl)
 			mockEventRepository.EXPECT().FindAllByUserID(gomock.Any()).Return([]event.Event{mockEvent}, tt.findAllByUserIDErr).AnyTimes()
 
-			eventUsecase := NewEventUsecase(mockAuthService, mockUserService, mockEventRepository)
+			eventUsecase := NewEventUsecase(mockUserService, mockEventRepository)
 
 			_, err := eventUsecase.ListEvents(tt.ctx)
 			if tt.success && err != nil {
@@ -250,7 +245,6 @@ func TestDeleteEvent(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			mockAuthService := mocksauth.NewMockAuthService(ctrl)
 			mockUserService := mocksuser.NewMockUserService(ctrl)
 			mockUserService.EXPECT().GetUser(tt.ctx).Return(tt.userID, tt.getUserErr).AnyTimes()
 			eventUserID, _ := domainuser.NewUserIDFromString(tt.eventOwnerID)
@@ -260,7 +254,7 @@ func TestDeleteEvent(t *testing.T) {
 			mockEventRepository.EXPECT().FindByID(gomock.Any()).Return(mockEvent, tt.findByIDErr).AnyTimes()
 			mockEventRepository.EXPECT().Delete(gomock.Any()).Return(tt.deleteErr).AnyTimes()
 
-			eventUsecase := NewEventUsecase(mockAuthService, mockUserService, mockEventRepository)
+			eventUsecase := NewEventUsecase(mockUserService, mockEventRepository)
 
 			err := eventUsecase.DeleteEvent(tt.ctx, tt.eventID)
 			if tt.success && err != nil {

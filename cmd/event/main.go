@@ -11,10 +11,10 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 
-	authv1 "github.com/qkitzero/auth-service/gen/go/auth/v1"
+	// authv1 "github.com/qkitzero/auth-service/gen/go/auth/v1"
+	// apiauth "github.com/qkitzero/event-service/internal/infrastructure/api/auth"
 	eventv1 "github.com/qkitzero/event-service/gen/go/event/v1"
 	appevent "github.com/qkitzero/event-service/internal/application/event"
-	apiauth "github.com/qkitzero/event-service/internal/infrastructure/api/auth"
 	apiuser "github.com/qkitzero/event-service/internal/infrastructure/api/user"
 	"github.com/qkitzero/event-service/internal/infrastructure/db"
 	infraevent "github.com/qkitzero/event-service/internal/infrastructure/event"
@@ -41,7 +41,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	authTarget := util.GetEnv("AUTH_SERVICE_HOST", "") + ":" + util.GetEnv("AUTH_SERVICE_PORT", "")
+	// authTarget := util.GetEnv("AUTH_SERVICE_HOST", "") + ":" + util.GetEnv("AUTH_SERVICE_PORT", "")
 	userTarget := util.GetEnv("USER_SERVICE_HOST", "") + ":" + util.GetEnv("USER_SERVICE_PORT", "")
 
 	var opts grpc.DialOption
@@ -52,11 +52,11 @@ func main() {
 		opts = grpc.WithTransportCredentials(insecure.NewCredentials())
 	}
 
-	authConn, err := grpc.NewClient(authTarget, opts)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer authConn.Close()
+	// authConn, err := grpc.NewClient(authTarget, opts)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer authConn.Close()
 
 	userConn, err := grpc.NewClient(userTarget, opts)
 	if err != nil {
@@ -66,13 +66,13 @@ func main() {
 
 	server := grpc.NewServer()
 
-	authServiceClient := authv1.NewAuthServiceClient(authConn)
+	// authServiceClient := authv1.NewAuthServiceClient(authConn)
 	userServiceClient := userv1.NewUserServiceClient(userConn)
 	eventRepository := infraevent.NewEventRepository(db)
 
-	authService := apiauth.NewAuthService(authServiceClient)
+	// authService := apiauth.NewAuthService(authServiceClient)
 	userService := apiuser.NewUserService(userServiceClient)
-	eventUsecase := appevent.NewEventUsecase(authService, userService, eventRepository)
+	eventUsecase := appevent.NewEventUsecase(userService, eventRepository)
 
 	healthServer := health.NewServer()
 	eventHandler := grpcevent.NewEventHandler(eventUsecase)

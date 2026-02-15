@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/qkitzero/event-service/internal/application/auth"
 	"github.com/qkitzero/event-service/internal/application/user"
 	"github.com/qkitzero/event-service/internal/domain/event"
 	domainuser "github.com/qkitzero/event-service/internal/domain/user"
@@ -21,18 +20,15 @@ type EventUsecase interface {
 }
 
 type eventUsecase struct {
-	authService auth.AuthService
 	userService user.UserService
 	eventRepo   event.EventRepository
 }
 
 func NewEventUsecase(
-	authService auth.AuthService,
 	userService user.UserService,
 	eventRepo event.EventRepository,
 ) EventUsecase {
 	return &eventUsecase{
-		authService: authService,
 		userService: userService,
 		eventRepo:   eventRepo,
 	}
