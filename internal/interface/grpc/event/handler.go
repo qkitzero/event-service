@@ -3,6 +3,7 @@ package event
 import (
 	"context"
 	"errors"
+	"log"
 	"time"
 
 	"google.golang.org/grpc/codes"
@@ -56,7 +57,8 @@ func (h *EventHandler) CreateEvent(ctx context.Context, req *eventv1.CreateEvent
 		if errors.Is(err, domainevent.ErrPermissionDenied) {
 			return nil, status.Error(codes.PermissionDenied, err.Error())
 		}
-		return nil, status.Error(codes.Internal, err.Error())
+		log.Printf("CreateEvent: internal error: %v", err)
+		return nil, status.Error(codes.Internal, "internal error")
 	}
 
 	return &eventv1.CreateEventResponse{
@@ -112,7 +114,8 @@ func (h *EventHandler) UpdateEvent(ctx context.Context, req *eventv1.UpdateEvent
 		if errors.Is(err, domainevent.ErrPermissionDenied) {
 			return nil, status.Error(codes.PermissionDenied, err.Error())
 		}
-		return nil, status.Error(codes.Internal, err.Error())
+		log.Printf("UpdateEvent: internal error: %v", err)
+		return nil, status.Error(codes.Internal, "internal error")
 	}
 
 	return &eventv1.UpdateEventResponse{
@@ -144,7 +147,8 @@ func (h *EventHandler) GetEvent(ctx context.Context, req *eventv1.GetEventReques
 		if errors.Is(err, domainevent.ErrPermissionDenied) {
 			return nil, status.Error(codes.PermissionDenied, err.Error())
 		}
-		return nil, status.Error(codes.Internal, err.Error())
+		log.Printf("GetEvent: internal error: %v", err)
+		return nil, status.Error(codes.Internal, "internal error")
 	}
 
 	return &eventv1.GetEventResponse{
@@ -165,7 +169,8 @@ func (h *EventHandler) ListEvents(ctx context.Context, req *eventv1.ListEventsRe
 		if _, ok := status.FromError(err); ok {
 			return nil, err
 		}
-		return nil, status.Error(codes.Internal, err.Error())
+		log.Printf("ListEvents: internal error: %v", err)
+		return nil, status.Error(codes.Internal, "internal error")
 	}
 
 	pbEvents := make([]*eventv1.Event, 0, len(events))
@@ -201,7 +206,8 @@ func (h *EventHandler) DeleteEvent(ctx context.Context, req *eventv1.DeleteEvent
 		if errors.Is(err, domainevent.ErrPermissionDenied) {
 			return nil, status.Error(codes.PermissionDenied, err.Error())
 		}
-		return nil, status.Error(codes.Internal, err.Error())
+		log.Printf("DeleteEvent: internal error: %v", err)
+		return nil, status.Error(codes.Internal, "internal error")
 	}
 
 	return &eventv1.DeleteEventResponse{}, nil
