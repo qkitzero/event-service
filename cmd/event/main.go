@@ -1,8 +1,12 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -23,8 +27,10 @@ import (
 	userv1 "github.com/qkitzero/user-service/gen/go/user/v1"
 )
 
+const shutdownTimeout = 15 * time.Second
+
 func main() {
-	db, err := db.Init(
+	gormDB, err := db.Init(
 		util.GetEnv("DB_HOST", ""),
 		util.GetEnv("DB_USER", ""),
 		util.GetEnv("DB_PASSWORD", ""),
@@ -35,6 +41,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	sqlDB, err := gormDB.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer sqlDB.Close()
 
 	listener, err := net.Listen("tcp", ":"+util.GetEnv("PORT", ""))
 	if err != nil {
@@ -68,7 +79,7 @@ func main() {
 
 	authServiceClient := authv1.NewAuthServiceClient(authConn)
 	userServiceClient := userv1.NewUserServiceClient(userConn)
-	eventRepository := infraevent.NewEventRepository(db)
+	eventRepository := infraevent.NewEventRepository(gormDB)
 
 	_ = apiauth.NewAuthService(authServiceClient)
 	userService := apiuser.NewUserService(userServiceClient)
@@ -86,7 +97,37 @@ func main() {
 		reflection.Register(server)
 	}
 
-	if err = server.Serve(listener); err != nil {
-		log.Fatal(err)
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+
+	serveErr := make(chan error, 1)
+	go func() {
+		log.Printf("gRPC server listening on %s", listener.Addr().String())
+		serveErr <- server.Serve(listener)
+	}()
+
+	select {
+	case err := <-serveErr:
+		if err != nil {
+			log.Fatalf("gRPC server failed: %v", err)
+		}
+	case <-ctx.Done():
+		log.Println("shutdown signal received, starting graceful stop")
+		healthServer.Shutdown()
+
+		stopped := make(chan struct{})
+		go func() {
+			server.GracefulStop()
+			close(stopped)
+		}()
+
+		select {
+		case <-stopped:
+			log.Println("gRPC server stopped gracefully")
+		case <-time.After(shutdownTimeout):
+			log.Printf("graceful stop timed out after %s, forcing stop", shutdownTimeout)
+			server.Stop()
+			<-stopped
+		}
 	}
 }
