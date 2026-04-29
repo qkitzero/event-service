@@ -1,6 +1,7 @@
 package event
 
 import (
+	"context"
 	"errors"
 	"regexp"
 	"testing"
@@ -85,7 +86,7 @@ func TestCreate(t *testing.T) {
 
 			repo := NewEventRepository(gormDB)
 
-			err = repo.Create(mockEvent)
+			err = repo.Create(context.Background(), mockEvent)
 			if tt.success && err != nil {
 				t.Errorf("expected no error, but got %v", err)
 			}
@@ -167,7 +168,7 @@ func TestUpdate(t *testing.T) {
 
 			repo := NewEventRepository(gormDB)
 
-			err = repo.Update(mockEvent)
+			err = repo.Update(context.Background(), mockEvent)
 			if tt.success && err != nil {
 				t.Errorf("expected no error, but got %v", err)
 			}
@@ -245,7 +246,7 @@ func TestFindByID(t *testing.T) {
 
 			repo := NewEventRepository(gormDB)
 
-			_, err = repo.FindByID(tt.id)
+			_, err = repo.FindByID(context.Background(), tt.id)
 			if tt.success && err != nil {
 				t.Errorf("expected no error, but got %v", err)
 			}
@@ -313,7 +314,7 @@ func TestFindAllByUserID(t *testing.T) {
 
 			repo := NewEventRepository(gormDB)
 
-			_, err = repo.FindAllByUserID(tt.userID)
+			_, err = repo.FindAllByUserID(context.Background(), tt.userID)
 			if tt.success && err != nil {
 				t.Errorf("expected no error, but got %v", err)
 			}
@@ -387,7 +388,7 @@ func TestDelete(t *testing.T) {
 
 			repo := NewEventRepository(gormDB)
 
-			err = repo.Delete(tt.id)
+			err = repo.Delete(context.Background(), tt.id)
 			if tt.success && err != nil {
 				t.Errorf("expected no error, but got %v", err)
 			}

@@ -46,7 +46,7 @@ func (s *eventUsecase) CreateEvent(ctx context.Context, title event.Title, descr
 	now := time.Now()
 	newEvent := event.NewEvent(event.NewEventID(), newUserID, title, description, startTime, endTime, color, now, now)
 
-	if err := s.eventRepo.Create(newEvent); err != nil {
+	if err := s.eventRepo.Create(ctx, newEvent); err != nil {
 		return nil, err
 	}
 
@@ -59,7 +59,7 @@ func (s *eventUsecase) UpdateEvent(ctx context.Context, eventID event.EventID, t
 		return nil, err
 	}
 
-	foundEvent, err := s.eventRepo.FindByID(eventID)
+	foundEvent, err := s.eventRepo.FindByID(ctx, eventID)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func (s *eventUsecase) UpdateEvent(ctx context.Context, eventID event.EventID, t
 
 	foundEvent.Update(title, description, newStartTime, newEndTime, color)
 
-	if err := s.eventRepo.Update(foundEvent); err != nil {
+	if err := s.eventRepo.Update(ctx, foundEvent); err != nil {
 		return nil, err
 	}
 
@@ -93,7 +93,7 @@ func (s *eventUsecase) GetEvent(ctx context.Context, eventID event.EventID) (eve
 		return nil, err
 	}
 
-	foundEvent, err := s.eventRepo.FindByID(eventID)
+	foundEvent, err := s.eventRepo.FindByID(ctx, eventID)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +116,7 @@ func (s *eventUsecase) ListEvents(ctx context.Context) ([]event.Event, error) {
 		return nil, err
 	}
 
-	events, err := s.eventRepo.FindAllByUserID(uid)
+	events, err := s.eventRepo.FindAllByUserID(ctx, uid)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +130,7 @@ func (s *eventUsecase) DeleteEvent(ctx context.Context, eventID event.EventID) e
 		return err
 	}
 
-	foundEvent, err := s.eventRepo.FindByID(eventID)
+	foundEvent, err := s.eventRepo.FindByID(ctx, eventID)
 	if err != nil {
 		return err
 	}
@@ -139,7 +139,7 @@ func (s *eventUsecase) DeleteEvent(ctx context.Context, eventID event.EventID) e
 		return event.ErrPermissionDenied
 	}
 
-	if err := s.eventRepo.Delete(eventID); err != nil {
+	if err := s.eventRepo.Delete(ctx, eventID); err != nil {
 		return err
 	}
 
