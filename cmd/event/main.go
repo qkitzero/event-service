@@ -103,7 +103,7 @@ func run() error {
 	if err != nil {
 		return fmt.Errorf("db handle: %w", err)
 	}
-	defer sqlDB.Close()
+	defer func() { _ = sqlDB.Close() }()
 
 	listener, err := net.Listen("tcp", ":"+cfg.Port)
 	if err != nil {
@@ -122,13 +122,13 @@ func run() error {
 	if err != nil {
 		return fmt.Errorf("auth client: %w", err)
 	}
-	defer authConn.Close()
+	defer func() { _ = authConn.Close() }()
 
 	userConn, err := grpc.NewClient(cfg.UserServiceHost+":"+cfg.UserServicePort, dialOpt)
 	if err != nil {
 		return fmt.Errorf("user client: %w", err)
 	}
-	defer userConn.Close()
+	defer func() { _ = userConn.Close() }()
 
 	server := grpc.NewServer()
 
