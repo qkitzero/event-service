@@ -22,6 +22,7 @@ classDiagram
 
     class Event {
         id
+        userID
         title
         description
         startTime
@@ -30,11 +31,6 @@ classDiagram
         createdAt
         updatedAt
     }
-
-    class UserID {
-    }
-
-     Event "*" -- "1" UserID : has
 ```
 
 ```mermaid
