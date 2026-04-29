@@ -10,6 +10,7 @@
 package mocks
 
 import (
+	context "context"
 	reflect "reflect"
 
 	event "github.com/qkitzero/event-service/internal/domain/event"
@@ -42,73 +43,73 @@ func (m *MockEventRepository) EXPECT() *MockEventRepositoryMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockEventRepository) Create(arg0 event.Event) error {
+func (m *MockEventRepository) Create(ctx context.Context, arg1 event.Event) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", arg0)
+	ret := m.ctrl.Call(m, "Create", ctx, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockEventRepositoryMockRecorder) Create(arg0 any) *gomock.Call {
+func (mr *MockEventRepositoryMockRecorder) Create(ctx, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockEventRepository)(nil).Create), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockEventRepository)(nil).Create), ctx, arg1)
 }
 
 // Delete mocks base method.
-func (m *MockEventRepository) Delete(id event.EventID) error {
+func (m *MockEventRepository) Delete(ctx context.Context, id event.EventID) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", id)
+	ret := m.ctrl.Call(m, "Delete", ctx, id)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockEventRepositoryMockRecorder) Delete(id any) *gomock.Call {
+func (mr *MockEventRepositoryMockRecorder) Delete(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockEventRepository)(nil).Delete), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockEventRepository)(nil).Delete), ctx, id)
 }
 
 // FindAllByUserID mocks base method.
-func (m *MockEventRepository) FindAllByUserID(userID user.UserID) ([]event.Event, error) {
+func (m *MockEventRepository) FindAllByUserID(ctx context.Context, userID user.UserID) ([]event.Event, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindAllByUserID", userID)
+	ret := m.ctrl.Call(m, "FindAllByUserID", ctx, userID)
 	ret0, _ := ret[0].([]event.Event)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindAllByUserID indicates an expected call of FindAllByUserID.
-func (mr *MockEventRepositoryMockRecorder) FindAllByUserID(userID any) *gomock.Call {
+func (mr *MockEventRepositoryMockRecorder) FindAllByUserID(ctx, userID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAllByUserID", reflect.TypeOf((*MockEventRepository)(nil).FindAllByUserID), userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAllByUserID", reflect.TypeOf((*MockEventRepository)(nil).FindAllByUserID), ctx, userID)
 }
 
 // FindByID mocks base method.
-func (m *MockEventRepository) FindByID(id event.EventID) (event.Event, error) {
+func (m *MockEventRepository) FindByID(ctx context.Context, id event.EventID) (event.Event, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByID", id)
+	ret := m.ctrl.Call(m, "FindByID", ctx, id)
 	ret0, _ := ret[0].(event.Event)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindByID indicates an expected call of FindByID.
-func (mr *MockEventRepositoryMockRecorder) FindByID(id any) *gomock.Call {
+func (mr *MockEventRepositoryMockRecorder) FindByID(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockEventRepository)(nil).FindByID), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockEventRepository)(nil).FindByID), ctx, id)
 }
 
 // Update mocks base method.
-func (m *MockEventRepository) Update(arg0 event.Event) error {
+func (m *MockEventRepository) Update(ctx context.Context, arg1 event.Event) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", arg0)
+	ret := m.ctrl.Call(m, "Update", ctx, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockEventRepositoryMockRecorder) Update(arg0 any) *gomock.Call {
+func (mr *MockEventRepositoryMockRecorder) Update(ctx, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockEventRepository)(nil).Update), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockEventRepository)(nil).Update), ctx, arg1)
 }

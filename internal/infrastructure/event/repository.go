@@ -1,6 +1,7 @@
 package event
 
 import (
+	"context"
 	"errors"
 
 	"gorm.io/gorm"
@@ -17,8 +18,8 @@ func NewEventRepository(db *gorm.DB) event.EventRepository {
 	return &eventRepository{db: db}
 }
 
-func (r *eventRepository) Create(e event.Event) error {
-	return r.db.Transaction(func(tx *gorm.DB) error {
+func (r *eventRepository) Create(ctx context.Context, e event.Event) error {
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		eventModel := EventModel{
 			ID:          e.ID(),
 			UserID:      e.UserID(),
@@ -39,8 +40,8 @@ func (r *eventRepository) Create(e event.Event) error {
 	})
 }
 
-func (r *eventRepository) Update(e event.Event) error {
-	return r.db.Transaction(func(tx *gorm.DB) error {
+func (r *eventRepository) Update(ctx context.Context, e event.Event) error {
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		eventModel := EventModel{
 			ID:          e.ID(),
 			UserID:      e.UserID(),
@@ -61,9 +62,9 @@ func (r *eventRepository) Update(e event.Event) error {
 	})
 }
 
-func (r *eventRepository) FindByID(id event.EventID) (event.Event, error) {
+func (r *eventRepository) FindByID(ctx context.Context, id event.EventID) (event.Event, error) {
 	var eventModel EventModel
-	err := r.db.First(&eventModel, "id = ?", id).Error
+	err := r.db.WithContext(ctx).First(&eventModel, "id = ?", id).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, event.ErrEventNotFound
 	}
@@ -86,9 +87,9 @@ func (r *eventRepository) FindByID(id event.EventID) (event.Event, error) {
 	return e, nil
 }
 
-func (r *eventRepository) FindAllByUserID(userID user.UserID) ([]event.Event, error) {
+func (r *eventRepository) FindAllByUserID(ctx context.Context, userID user.UserID) ([]event.Event, error) {
 	var eventModels []EventModel
-	if err := r.db.Where("user_id = ?", userID).Order("start_time asc, end_time asc").Find(&eventModels).Error; err != nil {
+	if err := r.db.WithContext(ctx).Where("user_id = ?", userID).Order("start_time asc, end_time asc").Find(&eventModels).Error; err != nil {
 		return nil, err
 	}
 
@@ -111,8 +112,8 @@ func (r *eventRepository) FindAllByUserID(userID user.UserID) ([]event.Event, er
 	return events, nil
 }
 
-func (r *eventRepository) Delete(id event.EventID) error {
-	return r.db.Transaction(func(tx *gorm.DB) error {
+func (r *eventRepository) Delete(ctx context.Context, id event.EventID) error {
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if err := tx.Delete(&EventModel{}, "id = ?", id).Error; err != nil {
 			return err
 		}

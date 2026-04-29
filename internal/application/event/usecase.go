@@ -7,15 +7,14 @@ import (
 	"github.com/qkitzero/event-service/internal/application/user"
 	"github.com/qkitzero/event-service/internal/domain/event"
 	domainuser "github.com/qkitzero/event-service/internal/domain/user"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type EventUsecase interface {
-	CreateEvent(ctx context.Context, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error)
-	UpdateEvent(ctx context.Context, eventID, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error)
-	GetEvent(ctx context.Context, eventID string) (event.Event, error)
+	CreateEvent(ctx context.Context, title event.Title, description event.Description, startTime, endTime time.Time, color event.Color) (event.Event, error)
+	UpdateEvent(ctx context.Context, eventID event.EventID, title event.Title, description event.Description, startTime, endTime *time.Time, color event.Color) (event.Event, error)
+	GetEvent(ctx context.Context, eventID event.EventID) (event.Event, error)
 	ListEvents(ctx context.Context) ([]event.Event, error)
-	DeleteEvent(ctx context.Context, eventID string) error
+	DeleteEvent(ctx context.Context, eventID event.EventID) error
 }
 
 type eventUsecase struct {
@@ -33,7 +32,7 @@ func NewEventUsecase(
 	}
 }
 
-func (s *eventUsecase) CreateEvent(ctx context.Context, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error) {
+func (s *eventUsecase) CreateEvent(ctx context.Context, title event.Title, description event.Description, startTime, endTime time.Time, color event.Color) (event.Event, error) {
 	userID, err := s.userService.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -44,52 +43,23 @@ func (s *eventUsecase) CreateEvent(ctx context.Context, title, description strin
 		return nil, err
 	}
 
-	newTitle, err := event.NewTitle(title)
-	if err != nil {
-		return nil, err
-	}
+	now := time.Now()
+	newEvent := event.NewEvent(event.NewEventID(), newUserID, title, description, startTime, endTime, color, now, now)
 
-	newDescription, err := event.NewDescription(description)
-	if err != nil {
-		return nil, err
-	}
-
-	if startTime == nil {
-		return nil, event.ErrStartTimeRequired
-	}
-	newStartTime := startTime.AsTime()
-
-	if endTime == nil {
-		return nil, event.ErrEndTimeRequired
-	}
-	newEndTime := endTime.AsTime()
-
-	newColor, err := event.NewColor(color)
-	if err != nil {
-		return nil, err
-	}
-
-	newEvent := event.NewEvent(event.NewEventID(), newUserID, newTitle, newDescription, newStartTime, newEndTime, newColor, time.Now(), time.Now())
-
-	if err := s.eventRepo.Create(newEvent); err != nil {
+	if err := s.eventRepo.Create(ctx, newEvent); err != nil {
 		return nil, err
 	}
 
 	return newEvent, nil
 }
 
-func (s *eventUsecase) UpdateEvent(ctx context.Context, eventID, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error) {
+func (s *eventUsecase) UpdateEvent(ctx context.Context, eventID event.EventID, title event.Title, description event.Description, startTime, endTime *time.Time, color event.Color) (event.Event, error) {
 	userID, err := s.userService.GetUser(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	id, err := event.NewEventIDFromString(eventID)
-	if err != nil {
-		return nil, err
-	}
-
-	foundEvent, err := s.eventRepo.FindByID(id)
+	foundEvent, err := s.eventRepo.FindByID(ctx, eventID)
 	if err != nil {
 		return nil, err
 	}
@@ -98,52 +68,32 @@ func (s *eventUsecase) UpdateEvent(ctx context.Context, eventID, title, descript
 		return nil, event.ErrPermissionDenied
 	}
 
-	newTitle, err := event.NewTitle(title)
-	if err != nil {
-		return nil, err
-	}
-
-	newDescription, err := event.NewDescription(description)
-	if err != nil {
-		return nil, err
-	}
-
 	newStartTime := foundEvent.StartTime()
 	if startTime != nil {
-		newStartTime = startTime.AsTime()
+		newStartTime = *startTime
 	}
 
 	newEndTime := foundEvent.EndTime()
 	if endTime != nil {
-		newEndTime = endTime.AsTime()
+		newEndTime = *endTime
 	}
 
-	newColor, err := event.NewColor(color)
-	if err != nil {
-		return nil, err
-	}
+	foundEvent.Update(title, description, newStartTime, newEndTime, color)
 
-	foundEvent.Update(newTitle, newDescription, newStartTime, newEndTime, newColor)
-
-	if err := s.eventRepo.Update(foundEvent); err != nil {
+	if err := s.eventRepo.Update(ctx, foundEvent); err != nil {
 		return nil, err
 	}
 
 	return foundEvent, nil
 }
 
-func (s *eventUsecase) GetEvent(ctx context.Context, eventID string) (event.Event, error) {
+func (s *eventUsecase) GetEvent(ctx context.Context, eventID event.EventID) (event.Event, error) {
 	userID, err := s.userService.GetUser(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	id, err := event.NewEventIDFromString(eventID)
-	if err != nil {
-		return nil, err
-	}
-
-	foundEvent, err := s.eventRepo.FindByID(id)
+	foundEvent, err := s.eventRepo.FindByID(ctx, eventID)
 	if err != nil {
 		return nil, err
 	}
@@ -166,7 +116,7 @@ func (s *eventUsecase) ListEvents(ctx context.Context) ([]event.Event, error) {
 		return nil, err
 	}
 
-	events, err := s.eventRepo.FindAllByUserID(uid)
+	events, err := s.eventRepo.FindAllByUserID(ctx, uid)
 	if err != nil {
 		return nil, err
 	}
@@ -174,18 +124,13 @@ func (s *eventUsecase) ListEvents(ctx context.Context) ([]event.Event, error) {
 	return events, nil
 }
 
-func (s *eventUsecase) DeleteEvent(ctx context.Context, eventID string) error {
+func (s *eventUsecase) DeleteEvent(ctx context.Context, eventID event.EventID) error {
 	userID, err := s.userService.GetUser(ctx)
 	if err != nil {
 		return err
 	}
 
-	id, err := event.NewEventIDFromString(eventID)
-	if err != nil {
-		return err
-	}
-
-	foundEvent, err := s.eventRepo.FindByID(id)
+	foundEvent, err := s.eventRepo.FindByID(ctx, eventID)
 	if err != nil {
 		return err
 	}
@@ -194,7 +139,7 @@ func (s *eventUsecase) DeleteEvent(ctx context.Context, eventID string) error {
 		return event.ErrPermissionDenied
 	}
 
-	if err := s.eventRepo.Delete(id); err != nil {
+	if err := s.eventRepo.Delete(ctx, eventID); err != nil {
 		return err
 	}
 

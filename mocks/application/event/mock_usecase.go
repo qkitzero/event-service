@@ -12,10 +12,10 @@ package mocks
 import (
 	context "context"
 	reflect "reflect"
+	time "time"
 
 	event "github.com/qkitzero/event-service/internal/domain/event"
 	gomock "go.uber.org/mock/gomock"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // MockEventUsecase is a mock of EventUsecase interface.
@@ -43,7 +43,7 @@ func (m *MockEventUsecase) EXPECT() *MockEventUsecaseMockRecorder {
 }
 
 // CreateEvent mocks base method.
-func (m *MockEventUsecase) CreateEvent(ctx context.Context, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error) {
+func (m *MockEventUsecase) CreateEvent(ctx context.Context, title event.Title, description event.Description, startTime, endTime time.Time, color event.Color) (event.Event, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateEvent", ctx, title, description, startTime, endTime, color)
 	ret0, _ := ret[0].(event.Event)
@@ -58,7 +58,7 @@ func (mr *MockEventUsecaseMockRecorder) CreateEvent(ctx, title, description, sta
 }
 
 // DeleteEvent mocks base method.
-func (m *MockEventUsecase) DeleteEvent(ctx context.Context, eventID string) error {
+func (m *MockEventUsecase) DeleteEvent(ctx context.Context, eventID event.EventID) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteEvent", ctx, eventID)
 	ret0, _ := ret[0].(error)
@@ -72,7 +72,7 @@ func (mr *MockEventUsecaseMockRecorder) DeleteEvent(ctx, eventID any) *gomock.Ca
 }
 
 // GetEvent mocks base method.
-func (m *MockEventUsecase) GetEvent(ctx context.Context, eventID string) (event.Event, error) {
+func (m *MockEventUsecase) GetEvent(ctx context.Context, eventID event.EventID) (event.Event, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetEvent", ctx, eventID)
 	ret0, _ := ret[0].(event.Event)
@@ -102,7 +102,7 @@ func (mr *MockEventUsecaseMockRecorder) ListEvents(ctx any) *gomock.Call {
 }
 
 // UpdateEvent mocks base method.
-func (m *MockEventUsecase) UpdateEvent(ctx context.Context, eventID, title, description string, startTime, endTime *timestamppb.Timestamp, color string) (event.Event, error) {
+func (m *MockEventUsecase) UpdateEvent(ctx context.Context, eventID event.EventID, title event.Title, description event.Description, startTime, endTime *time.Time, color event.Color) (event.Event, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateEvent", ctx, eventID, title, description, startTime, endTime, color)
 	ret0, _ := ret[0].(event.Event)
