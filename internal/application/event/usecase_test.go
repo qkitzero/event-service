@@ -48,7 +48,7 @@ func TestCreateEvent(t *testing.T) {
 			mockUserService := mocksuser.NewMockUserService(ctrl)
 			mockEventRepository := mocksevent.NewMockEventRepository(ctrl)
 			mockUserService.EXPECT().GetUser(tt.ctx).Return(tt.userID, tt.getUserErr).AnyTimes()
-			mockEventRepository.EXPECT().Create(gomock.Any(), gomock.Any()).Return(tt.createErr).AnyTimes()
+			mockEventRepository.EXPECT().Create(tt.ctx, gomock.Any()).Return(tt.createErr).AnyTimes()
 
 			u := NewEventUsecase(mockUserService, mockEventRepository)
 
@@ -102,8 +102,8 @@ func TestUpdateEvent(t *testing.T) {
 			mockEvent.EXPECT().EndTime().Return(now).AnyTimes()
 			mockEvent.EXPECT().Update(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return().AnyTimes()
 			mockEventRepository := mocksevent.NewMockEventRepository(ctrl)
-			mockEventRepository.EXPECT().FindByID(gomock.Any(), gomock.Any()).Return(mockEvent, tt.findByIDErr).AnyTimes()
-			mockEventRepository.EXPECT().Update(gomock.Any(), gomock.Any()).Return(tt.updateErr).AnyTimes()
+			mockEventRepository.EXPECT().FindByID(tt.ctx, gomock.Any()).Return(mockEvent, tt.findByIDErr).AnyTimes()
+			mockEventRepository.EXPECT().Update(tt.ctx, gomock.Any()).Return(tt.updateErr).AnyTimes()
 
 			u := NewEventUsecase(mockUserService, mockEventRepository)
 
@@ -148,7 +148,7 @@ func TestGetEvent(t *testing.T) {
 			mockEvent := mocksevent.NewMockEvent(ctrl)
 			mockEvent.EXPECT().UserID().Return(domainuser.UserID{UUID: uuid.MustParse(tt.eventUserID)}).AnyTimes()
 			mockEventRepository := mocksevent.NewMockEventRepository(ctrl)
-			mockEventRepository.EXPECT().FindByID(gomock.Any(), gomock.Any()).Return(mockEvent, tt.findByIDErr).AnyTimes()
+			mockEventRepository.EXPECT().FindByID(tt.ctx, gomock.Any()).Return(mockEvent, tt.findByIDErr).AnyTimes()
 
 			u := NewEventUsecase(mockUserService, mockEventRepository)
 
@@ -190,7 +190,7 @@ func TestListEvents(t *testing.T) {
 			mockUserService.EXPECT().GetUser(tt.ctx).Return(tt.userID, tt.getUserErr).AnyTimes()
 			mockEvent := mocksevent.NewMockEvent(ctrl)
 			mockEventRepository := mocksevent.NewMockEventRepository(ctrl)
-			mockEventRepository.EXPECT().FindAllByUserID(gomock.Any(), gomock.Any()).Return([]event.Event{mockEvent}, tt.findAllByUserIDErr).AnyTimes()
+			mockEventRepository.EXPECT().FindAllByUserID(tt.ctx, gomock.Any()).Return([]event.Event{mockEvent}, tt.findAllByUserIDErr).AnyTimes()
 
 			u := NewEventUsecase(mockUserService, mockEventRepository)
 
@@ -237,8 +237,8 @@ func TestDeleteEvent(t *testing.T) {
 			mockEvent := mocksevent.NewMockEvent(ctrl)
 			mockEvent.EXPECT().UserID().Return(domainuser.UserID{UUID: uuid.MustParse(tt.eventUserID)}).AnyTimes()
 			mockEventRepository := mocksevent.NewMockEventRepository(ctrl)
-			mockEventRepository.EXPECT().FindByID(gomock.Any(), gomock.Any()).Return(mockEvent, tt.findByIDErr).AnyTimes()
-			mockEventRepository.EXPECT().Delete(gomock.Any(), gomock.Any()).Return(tt.deleteErr).AnyTimes()
+			mockEventRepository.EXPECT().FindByID(tt.ctx, gomock.Any()).Return(mockEvent, tt.findByIDErr).AnyTimes()
+			mockEventRepository.EXPECT().Delete(tt.ctx, gomock.Any()).Return(tt.deleteErr).AnyTimes()
 
 			u := NewEventUsecase(mockUserService, mockEventRepository)
 
